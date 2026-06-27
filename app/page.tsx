@@ -10,8 +10,6 @@ import {
   Compass,
   CheckSquare,
   DollarSign,
-  Plus,
-  Trash2,
   ChevronRight,
   ChevronDown,
   Info,
@@ -29,8 +27,10 @@ import {
   HelpCircle,
   AlertTriangle,
   Award,
-  Flame
+  Flame,
+  Map
 } from 'lucide-react';
+import Link from 'next/link';
 
 // Types
 interface Participant {
@@ -46,43 +46,16 @@ interface Expense {
   sharedWith: string[]; // Array of IDs
 }
 
-interface ChecklistItem {
-  id: string;
-  text: string;
-  checked: boolean;
-}
-
-interface ChecklistCategory {
-  id: string;
-  title: string;
-  icon: string;
-  items: ChecklistItem[];
-}
-
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-interface Destination {
-  id: string;
-  name: string;
-  type: string;
-  description: string;
-  highlights: string[];
-  tips: string;
-  mapyUrl?: string;
-  slCardInfo?: string;
-  noteKey: string;
-  cableCarHours?: string;
-  cableCarDuration?: string;
-  dogPrice?: string;
-  webUrl?: string;
-}
+import { Destination, destinations } from '@/lib/destinations';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'hikes' | 'card' | 'packing' | 'ai'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'hikes' | 'card' | 'ai'>('overview');
 
   // Time States
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -104,61 +77,6 @@ export default function Home() {
 
   // Itinerary Notes
   const [itineraryNotes, setItineraryNotes] = useState<Record<string, string>>({});
-
-  // Packing Checklist State
-  const [checklist, setChecklist] = useState<ChecklistCategory[]>([
-    {
-      id: 'docs',
-      title: 'Doklady & Finance',
-      icon: 'CreditCard',
-      items: [
-        { id: 'doc1', text: 'SalzburgerLand Card (vytištěná/mobilní)', checked: false },
-        { id: 'doc2', text: 'Občanský průkaz / Pas', checked: false },
-        { id: 'doc3', text: 'Potvrzení rezervace – Pension Baranekhof', checked: false },
-        { id: 'doc4', text: 'Kartička zdravotního pojištění / Cestovní pojištění', checked: false },
-        { id: 'doc5', text: 'Hotovost v EUR (na horské boudy, parkoviště)', checked: false }
-      ]
-    },
-    {
-      id: 'hiking',
-      title: 'Turistická výbava',
-      icon: 'Mountain',
-      items: [
-        { id: 'hik1', text: 'Kvalitní trekové boty (rozšlápnuté pohorky)', checked: false },
-        { id: 'hik2', text: 'Nepromokavá bunda / Pláštěnka', checked: false },
-        { id: 'hik3', text: 'Funkční oblečení (více tenkých vrstev)', checked: false },
-        { id: 'hik4', text: 'Malý turistický batoh (20-30L)', checked: false },
-        { id: 'hik5', text: 'Sluneční brýle & Ochranný opalovací krém', checked: false },
-        { id: 'hik6', text: 'Trekové hole (skládací)', checked: false },
-        { id: 'hik7', text: 'Láhev na vodu / Termoska', checked: false }
-      ]
-    },
-    {
-      id: 'relax',
-      title: 'Relax & Osobní věci',
-      icon: 'Sun',
-      items: [
-        { id: 'rel1', text: 'Plavky (nevyhnutné do Tauern Spa!)', checked: false },
-        { id: 'rel2', text: 'Pohodlné oblečení na večery v pensionu', checked: false },
-        { id: 'rel3', text: 'Přezůvky do Baranekhofu', checked: false },
-        { id: 'rel4', text: 'Společenské hry na večer', checked: false },
-        { id: 'rel5', text: 'Nabíječky & Powerbanka', checked: false }
-      ]
-    },
-    {
-      id: 'pharmacy',
-      title: 'Osobní lékárnička',
-      icon: 'AlertTriangle',
-      items: [
-        { id: 'pha1', text: 'Speciální náplasti na puchýře (např. Compeed)', checked: false },
-        { id: 'pha2', text: 'Léky proti bolesti / horečce (Ibalgin, Paralen)', checked: false },
-        { id: 'pha3', text: 'Dezinfekce na drobné rány', checked: false },
-        { id: 'pha4', text: 'Repelent proti klíšťatům a hmyzu', checked: false }
-      ]
-    }
-  ]);
-  const [newChecklistItemText, setNewChecklistItemText] = useState('');
-  const [selectedCategoryForAdd, setSelectedCategoryForAdd] = useState('docs');
 
   // SalzburgerLand Card Interactive Simulator
   const [selectedAttractions, setSelectedAttractions] = useState<string[]>([
@@ -239,14 +157,17 @@ export default function Home() {
       setMounted(true);
 
       try {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab && ['overview', 'hikes', 'card', 'ai'].includes(tab)) {
+          setActiveTab(tab as any);
+        }
+
         const savedParticipants = localStorage.getItem('kaprun_participants');
         if (savedParticipants) setParticipants(JSON.parse(savedParticipants));
 
         const savedExpenses = localStorage.getItem('kaprun_expenses');
         if (savedExpenses) setExpenses(JSON.parse(savedExpenses));
-
-        const savedChecklist = localStorage.getItem('kaprun_checklist');
-        if (savedChecklist) setChecklist(JSON.parse(savedChecklist));
 
         const savedNotes = localStorage.getItem('kaprun_notes');
         if (savedNotes) setItineraryNotes(JSON.parse(savedNotes));
@@ -299,11 +220,6 @@ export default function Home() {
     if (!mounted) return;
     localStorage.setItem('kaprun_expenses', JSON.stringify(expenses));
   }, [expenses, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    localStorage.setItem('kaprun_checklist', JSON.stringify(checklist));
-  }, [checklist, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -452,52 +368,6 @@ export default function Home() {
 
   const savingsStats = calculateCardSavings();
 
-  // Checklist updates
-  const handleToggleChecklist = (catId: string, itemId: string) => {
-    setChecklist(
-      checklist.map(cat => {
-        if (cat.id !== catId) return cat;
-        return {
-          ...cat,
-          items: cat.items.map(item => {
-            if (item.id !== itemId) return item;
-            return { ...item, checked: !item.checked };
-          })
-        };
-      })
-    );
-  };
-
-  const handleAddChecklistItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newChecklistItemText.trim()) return;
-
-    setChecklist(
-      checklist.map(cat => {
-        if (cat.id !== selectedCategoryForAdd) return cat;
-        return {
-          ...cat,
-          items: [
-            ...cat.items,
-            { id: Date.now().toString(), text: newChecklistItemText.trim(), checked: false }
-          ]
-        };
-      })
-    );
-    setNewChecklistItemText('');
-  };
-
-  const handleDeleteChecklistItem = (catId: string, itemId: string) => {
-    setChecklist(
-      checklist.map(cat => {
-        if (cat.id !== catId) return cat;
-        return {
-          ...cat,
-          items: cat.items.filter(item => item.id !== itemId)
-        };
-      })
-    );
-  };
 
   // Update participant name
   const handleUpdateParticipantName = (id: string, newName: string) => {
@@ -558,133 +428,7 @@ export default function Home() {
     }
   };
 
-  // Destinations static definition
-  const destinations: Destination[] = [
-    {
-      id: 'kitzsteinhorn',
-      name: 'Ledovec Kitzsteinhorn & Top of Salzburg',
-      type: 'Ledovec & Výhledy',
-      description: 'Zážitkový výjezd třemi lanovkami do výšky 3 029 m n. m. s celoročním sněhem a vyhlídkovou plošinou.',
-      highlights: [
-        'Vyhlídková plošina „Top of Salzburg“ s panoramatickým výhledem na třítisícovky',
-        'Ledová aréna Ice Arena s klouzačkami na sněhu uprostřed léta',
-        'Kino 3000 a Nationalpark Gallery (tunel skrz horu s informacemi o přírodě)'
-      ],
-      tips: 'Teploty nahoře bývají kolem nuly i v červenci, nezapomeňte zimní bundu a pevné pohorky! Vyrazte hned ráno.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=6306234',
-      slCardInfo: 'Jednorázový výjezd a sjezd lanovkou zdarma.',
-      noteKey: 'note_kitzsteinhorn',
-      cableCarHours: '8:30 – 16:45',
-      cableCarDuration: 'cca 30–40 min',
-      dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
-      webUrl: 'https://www.kitzsteinhorn.at'
-    },
-    {
-      id: 'sigmund_thun_klam',
-      name: 'Soutěska Sigmund-Thun-Klamm & Klammsee',
-      type: 'Soutěska & Jezero',
-      description: 'Působivá dřevěná lávková stezka vedoucí těsně nad dravým proudem ledovcové řeky Kapruner Ache, navazující na tyrkysové jezero Klammsee.',
-      highlights: [
-        'Procházka po dřevěných visutých lávkách v úzké soutěsce',
-        'Průzračné tyrkysové jezero Klammsee s možností obchůzky',
-        'Dětské hřiště a občerstvení u Klammsee'
-      ],
-      tips: 'Nachází se jen pár minut chůze od Pensionu Baranekhof. Vhodné i za méně stabilního počasí.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=12020854',
-      slCardInfo: 'Vstup do soutěsky Sigmund-Thun-Klamm je zdarma.',
-      noteKey: 'note_sigmund',
-      webUrl: 'https://www.klamm-kaprun.at'
-    },
-    {
-      id: 'mooserboden',
-      name: 'Vysokohorské přehrady Mooserboden',
-      type: 'Přehrady & Vysokohorská turistika',
-      description: 'Monumentální vodní dílo sevřené mezi štíty třítisícovek ve výšce 2 036 m n. m., dostupné speciálními autobusy a obřím šikmým výtahem.',
-      highlights: [
-        'Jízda největším otevřeným šikmým výtahem v Evropě (Lärchwand)',
-        'Procházka po koruně 107 m vysoké přehradní hráze',
-        'Výstavní centrum o historii stavby a možnost komentované prohlídky vnitřku hráze'
-      ],
-      tips: 'Skvělý výchozí bod pro další vysokohorské túry. Poslední autobus dolů jede kolem 16:45.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=96102629',
-      slCardInfo: 'Výrazná sleva na kombinovanou jízdenku.',
-      noteKey: 'note_mooserboden',
-      cableCarHours: '8:10 – 16:45 (poslední bus dolů)',
-      cableCarDuration: 'cca 45 min (bus + výtah + bus)',
-      dogPrice: '9,00 € (nutný náhubek + vodítko)',
-      webUrl: 'https://www.verbund.com/kaprun'
-    },
-    {
-      id: 'maiskogel',
-      name: 'Rodinná hora Maiskogel & Maisi Flitzer',
-      type: 'Horská turistika & Zábava',
-      description: 'Pohodový rodinný vrchol přímo nad Kaprunem s celoroční bobovou dráhou a spoustou panoramatických stezek.',
-      highlights: [
-        'Maisi Flitzer - 1,3 km dlouhá bobová dráha s vlnami a zatáčkami v dolní stanici',
-        'Lanovka MK Maiskogelbahn vedoucí přímo z centra Kaprunu',
-        'Horská chata Maiskogel Alm s terasou a vyhlídkou'
-      ],
-      tips: 'Ideální cíl na aklimatizaci nebo půldenní rodinnou turistiku s dětmi.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1066791681',
-      slCardInfo: 'Jízda lanovkou zdarma, na bobovou dráhu platí sleva.',
-      noteKey: 'note_maiskogel',
-      cableCarHours: '9:00 – 17:00',
-      cableCarDuration: 'cca 10 min',
-      dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
-      webUrl: 'https://www.kitzsteinhorn.at/maiskogel'
-    },
-    {
-      id: 'zell_am_see',
-      name: 'Jezero Zell am See & Schmittenhöhe',
-      type: 'Jezero, Plavba & Lanovka',
-      description: 'Průzračné jezero obklopené horami a majestátní vyhlídkový vrchol Schmittenhöhe s designovými kabinami Porsche Design.',
-      highlights: [
-        'Okružní plavba vyhlídkovou lodí po jezeře',
-        'Koupání v jezerních plážích (Zell, Thumersbach, Schüttdorf)',
-        'Panoramatické turistické stezky s výhledem na jezero z vrcholu Schmittenhöhe'
-      ],
-      tips: 'Vyhlídková plavba lodí je velmi populární, vyplatí se zkontrolovat plavební řád předem.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?planovani-trasy&rc=9dVMaxKKxS575adY-fxKNO2dtKeP5&rs=osm&rs=pubt&rs=osm&rs=osm&ri=150040160&ri=28043547&ri=1040825275&ri=1063743585&mrp=%7B%22c%22%3A132%2C%22dt%22%3A%22%22%2C%22d%22%3Atrue%7D&xc=%5B%5D&x=12.8004831&y=47.3276843&z=14',
-      slCardInfo: 'Okružní plavba lodí i jízda lanovkou na Schmittenhöhe jsou zdarma.',
-      noteKey: 'note_zell',
-      cableCarHours: '9:00 – 17:00',
-      cableCarDuration: 'cca 10 min',
-      dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
-      webUrl: 'https://www.schmitten.at'
-    },
-    {
-      id: 'krimml_waterfalls',
-      name: 'Krimmlské vodopády (Krimmler Wasserfälle)',
-      type: 'Vodopády & Příroda',
-      description: 'Největší vodopády v Evropě s celkovou výškou 380 metrů. Podél kaskád vede upravená vyhlídková stezka s mnoha plošinami.',
-      highlights: [
-        'Zážitková stezka Wasserfallweg s 11 vyhlídkami přímo u burácející vody',
-        'Vzdušné aerosolové klima s léčivými účinky na astma a alergie',
-        'Moderní návštěvnické centrum WasserWelten Krimml'
-      ],
-      tips: 'Vezměte si pláštěnku nebo nepromokavou bundu, vodní tříšť stříká daleko na vyhlídkové plošiny.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=11998097',
-      slCardInfo: 'Vstup k vodopádnám a parkování zdarma.',
-      noteKey: 'note_krimml',
-      webUrl: 'https://www.krimmler-wasserwelten.at'
-    },
-    {
-      id: 'tauern_spa',
-      name: 'Tauern Spa Kaprun',
-      type: 'Wellness & Relax',
-      description: 'Moderní lázeňský a bazénový resort o rozloze 20 000 m² s venkovními i vnitřními bazény, saunami a panoramatickými výhledy.',
-      highlights: [
-        'Venkovní aktivní bazén s proudem a výhledem na Kitzsteinhorn',
-        'Velkorysý saunový svět s finskou, solnou a bylinkovou saunou',
-        'Relaxační zóny s lehátky a vnitřními vířivkami'
-      ],
-      tips: 'Ideální program pro deštivé odpoledne nebo pro zasloužený odpočinek po celodenní túře.',
-      mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1025788061',
-      slCardInfo: 'Sleva na vstupné s kartou.',
-      noteKey: 'note_tauern',
-      webUrl: 'https://www.tauernspakaprun.com'
-    }
-  ];
+
 
   // Weather display list processing for the specific trip week: 4.7. - 10.7.2026
   const displayWeather = (() => {
@@ -863,17 +607,6 @@ export default function Home() {
           </button>
 
           <button
-            id="tab_packing"
-            onClick={() => setActiveTab('packing')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all shrink-0 border ${
-              activeTab === 'packing'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'
-                : 'bg-transparent border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            <CheckSquare className="w-4 h-4" /> Balení
-          </button>
-          <button
             id="tab_ai"
             onClick={() => setActiveTab('ai')}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all shrink-0 border ${
@@ -884,6 +617,13 @@ export default function Home() {
           >
             <Sparkles className="w-4 h-4 text-emerald-500" /> AI Průvodce
           </button>
+          <Link
+            id="tab_map"
+            href="/map"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all shrink-0 border bg-transparent border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-200"
+          >
+            <Map className="w-4 h-4 text-emerald-600" /> Mapa destinací
+          </Link>
         </div>
       </nav>
 
@@ -1187,13 +927,13 @@ export default function Home() {
 
                     <div className="flex flex-wrap gap-4 text-xs font-mono text-slate-500 mb-2">
                       <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4 text-slate-400" /> Délka: ~18 km
+                        <Clock className="w-4 h-4 text-slate-400" /> Délka: 11 km
                       </div>
                       <div className="flex items-center gap-1">
-                        <Mountain className="w-4 h-4 text-slate-400" /> Čas: ~5 - 5.5 hod (pěšky)
+                        <Mountain className="w-4 h-4 text-slate-400" /> Čas: 2:48 hod (pěšky)
                       </div>
                       <div className="flex items-center gap-1">
-                        <Award className="w-4 h-4 text-slate-400" /> Převýšení: +420 m
+                        <Award className="w-4 h-4 text-slate-400" /> Převýšení: +14 m
                       </div>
                     </div>
                   </div>
@@ -1224,13 +964,13 @@ export default function Home() {
 
                     <div className="flex flex-wrap gap-4 text-xs font-mono text-slate-500 mb-2">
                       <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4 text-slate-400" /> Délka: ~8.5 km
+                        <Clock className="w-4 h-4 text-slate-400" /> Délka: 13,9 km
                       </div>
                       <div className="flex items-center gap-1">
-                        <Mountain className="w-4 h-4 text-slate-400" /> Čas: ~3.5 hod
+                        <Mountain className="w-4 h-4 text-slate-400" /> Čas: 4:31 hod
                       </div>
                       <div className="flex items-center gap-1">
-                        <Award className="w-4 h-4 text-slate-400" /> Převýšení: +650 m
+                        <Award className="w-4 h-4 text-slate-400" /> Převýšení: +395 m
                       </div>
                     </div>
                   </div>
@@ -1261,13 +1001,13 @@ export default function Home() {
 
                     <div className="flex flex-wrap gap-4 text-xs font-mono text-slate-500 mb-2">
                       <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4 text-slate-400" /> Délka: ~11 km
+                        <Clock className="w-4 h-4 text-slate-400" /> Délka: 16 km
                       </div>
                       <div className="flex items-center gap-1">
-                        <Mountain className="w-4 h-4 text-slate-400" /> Čas: ~4 hod
+                        <Mountain className="w-4 h-4 text-slate-400" /> Čas: 6:52 hod
                       </div>
                       <div className="flex items-center gap-1">
-                        <Award className="w-4 h-4 text-slate-400" /> Převýšení: +380 m
+                        <Award className="w-4 h-4 text-slate-400" /> Převýšení: +1 059 m
                       </div>
                     </div>
                   </div>
@@ -1478,128 +1218,6 @@ export default function Home() {
             </motion.div>
           )}
 
-
-          {/* TAB 5: SMART PACKING CHECKLIST */}
-          {activeTab === 'packing' && (
-            <motion.div
-              key="packing"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col gap-6"
-            >
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                  <div>
-                    <h3 className="text-lg font-bold font-display text-slate-900 mb-1">Cestovní kufr & Balící seznam</h3>
-                    <p className="text-sm text-slate-600">
-                      Připravený a plně interaktivní balící list určený pro letní horskou dovolenou v Rakousku. Položky si odškrtávejte přímo ve svém telefonu.
-                    </p>
-                  </div>
-                  {/* Progress Indicator */}
-                  <div className="shrink-0 bg-slate-50 border border-slate-100 rounded-xl p-3 text-center min-w-[120px]">
-                    <span className="text-[10px] uppercase font-mono text-slate-400 block mb-1">Celkem zabaleno</span>
-                    <span className="text-xl font-bold font-mono text-slate-800">
-                      {checklist.reduce((acc, cat) => acc + cat.items.filter(i => i.checked).length, 0)} /{' '}
-                      {checklist.reduce((acc, cat) => acc + cat.items.length, 0)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Add Custom Item form */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-                <form onSubmit={handleAddChecklistItem} className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    value={newChecklistItemText}
-                    onChange={(e) => setNewChecklistItemText(e.target.value)}
-                    placeholder="Např. Termoprádlo, Pláštěnka na batoh, GoPro"
-                    className="flex-1 text-sm p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
-                  />
-                  <div className="flex gap-2">
-                    <select
-                      value={selectedCategoryForAdd}
-                      onChange={(e) => setSelectedCategoryForAdd(e.target.value)}
-                      className="text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 w-40"
-                    >
-                      {checklist.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.title}</option>
-                      ))}
-                    </select>
-                    <button
-                      type="submit"
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" /> Přidat
-                    </button>
-                  </div>
-                </form>
-              </div>
-
-              {/* Checklist Render */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {checklist.map((cat) => (
-                  <div key={cat.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                      <div className="flex items-center gap-2">
-                        {cat.id === 'docs' && <CreditCard className="w-5 h-5 text-emerald-600" />}
-                        {cat.id === 'hiking' && <Mountain className="w-5 h-5 text-emerald-600" />}
-                        {cat.id === 'relax' && <Sun className="w-5 h-5 text-emerald-600" />}
-                        {cat.id === 'pharmacy' && <AlertTriangle className="w-5 h-5 text-emerald-600" />}
-                        <h4 className="text-base font-bold font-display text-slate-900">{cat.title}</h4>
-                      </div>
-                      <span className="text-xs font-mono text-slate-400">
-                        {cat.items.filter(i => i.checked).length} / {cat.items.length}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      {cat.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${
-                            item.checked
-                              ? 'bg-slate-50/50 border-slate-100 opacity-60'
-                              : 'bg-white border-slate-150 hover:bg-slate-50/30'
-                          }`}
-                        >
-                          <button
-                            onClick={() => handleToggleChecklist(cat.id, item.id)}
-                            className="flex-1 text-left flex items-start gap-3 cursor-pointer"
-                          >
-                            <div className={`w-5 h-5 rounded border mt-0.5 flex items-center justify-center transition-colors shrink-0 ${
-                              item.checked ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'
-                            }`}>
-                              {item.checked && <span className="text-xs font-bold">✓</span>}
-                            </div>
-                            <span className={`text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}`}>
-                              {item.text}
-                            </span>
-                          </button>
-
-                          <button
-                            onClick={() => handleDeleteChecklistItem(cat.id, item.id)}
-                            className="text-slate-300 hover:text-rose-600 p-1 rounded transition-colors"
-                            title="Smazat položku"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-
-                      {cat.items.length === 0 && (
-                        <p className="text-xs text-slate-400 font-mono text-center py-4 bg-slate-50 rounded-lg border border-dashed border-slate-100">
-                          Žádné položky v této kategorii.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
 
           {/* TAB 6: AI HOLIDAY ASSISTANT */}
           {activeTab === 'ai' && (

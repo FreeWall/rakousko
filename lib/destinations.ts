@@ -13,6 +13,7 @@ export interface Destination {
   dogPrice?: string;
   webUrl?: string;
   coords?: [number, number];
+  imageUrl: string;
 }
 
 export const destinations: Destination[] = [
@@ -34,7 +35,8 @@ export const destinations: Destination[] = [
     cableCarDuration: 'cca 30–40 min',
     dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
     webUrl: 'https://www.kitzsteinhorn.at',
-    coords: [47.2008, 12.6865]
+    coords: [47.2008, 12.6865],
+    imageUrl: '/images/destinations/kitzsteinhorn.webp'
   },
   {
     id: 'sigmund_thun_klam',
@@ -51,7 +53,8 @@ export const destinations: Destination[] = [
     slCardInfo: 'Vstup do soutěsky Sigmund-Thun-Klamm je zdarma.',
     noteKey: 'note_sigmund',
     webUrl: 'https://www.klamm-kaprun.at',
-    coords: [47.2625, 12.7483]
+    coords: [47.2625, 12.7483],
+    imageUrl: '/images/destinations/sigmund_thun_klam.webp'
   },
   {
     id: 'mooserboden',
@@ -71,7 +74,8 @@ export const destinations: Destination[] = [
     cableCarDuration: 'cca 45 min (bus + výtah + bus)',
     dogPrice: '9,00 € (nutný náhubek + vodítko)',
     webUrl: 'https://www.verbund.com/kaprun',
-    coords: [47.1614, 12.7214]
+    coords: [47.1614, 12.7214],
+    imageUrl: '/images/destinations/mooserboden.webp'
   },
   {
     id: 'maiskogel',
@@ -91,7 +95,8 @@ export const destinations: Destination[] = [
     cableCarDuration: 'cca 10 min',
     dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
     webUrl: 'https://www.kitzsteinhorn.at/maiskogel',
-    coords: [47.2667, 12.7333]
+    coords: [47.2667, 12.7333],
+    imageUrl: '/images/destinations/maiskogel.webp'
   },
   {
     id: 'zell_am_see',
@@ -111,7 +116,8 @@ export const destinations: Destination[] = [
     cableCarDuration: 'cca 10 min',
     dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
     webUrl: 'https://www.schmitten.at',
-    coords: [47.3278, 12.7378]
+    coords: [47.3278, 12.7378],
+    imageUrl: '/images/destinations/zell_am_see.webp'
   },
   {
     id: 'krimml_waterfalls',
@@ -128,7 +134,8 @@ export const destinations: Destination[] = [
     slCardInfo: 'Vstup k vodopádnám a parkování zdarma.',
     noteKey: 'note_krimml',
     webUrl: 'https://www.krimmler-wasserwelten.at',
-    coords: [47.2119, 12.1689]
+    coords: [47.2119, 12.1689],
+    imageUrl: '/images/destinations/krimml_waterfalls.webp'
   },
   {
     id: 'tauern_spa',
@@ -145,6 +152,7 @@ export const destinations: Destination[] = [
     slCardInfo: 'Sleva na vstupné s kartou.',
     noteKey: 'note_tauern',
     webUrl: 'https://www.tauernspakaprun.com',
-    coords: [47.2831, 12.7601]
+    coords: [47.2831, 12.7601],
+    imageUrl: '/images/destinations/tauern_spa.webp'
   }
 ];

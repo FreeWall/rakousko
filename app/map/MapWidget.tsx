@@ -196,18 +196,24 @@ export default function MapWidget() {
               <button
                 key={point.id}
                 onClick={() => handleSelectPoint(point)}
-                className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 border ${
+                className={`group w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 border ${
                   isSelected 
                     ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950 shadow-sm' 
                     : 'border-transparent hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className={`mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                  point.isHome 
-                    ? 'bg-rose-100 text-rose-600' 
-                    : 'bg-emerald-100 text-emerald-700'
-                }`}>
-                  {point.isHome ? <Home className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                <div className="relative mt-0.5 shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
+                  {point.isHome ? (
+                    <Home className="w-5 h-5 text-rose-500" />
+                  ) : (point as any).imageUrl ? (
+                    <img
+                      src={(point as any).imageUrl}
+                      alt={point.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <MapPin className="w-5 h-5 text-emerald-600" />
+                  )}
                 </div>
                 
                 <div className="flex-1 min-w-0">
@@ -237,6 +243,15 @@ export default function MapWidget() {
         {selectedPoint && (
           <div className="p-4 border-t border-slate-100 bg-slate-50/50">
             <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm space-y-3">
+              {!(selectedPoint as any).isHome && (selectedPoint as any).imageUrl && (
+                <div className="relative h-28 w-full rounded-lg overflow-hidden border border-slate-100 bg-slate-100">
+                  <img
+                    src={(selectedPoint as any).imageUrl}
+                    alt={selectedPoint.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <div>
                 <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold block mb-1">
                   {selectedPoint.type || 'Ubytování'}

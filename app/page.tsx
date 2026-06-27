@@ -640,47 +640,6 @@ export default function Home() {
               transition={{ duration: 0.2 }}
               className="flex flex-col gap-6"
             >
-              {/* Hotel & Location Overview */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between" id="overview_cards_grid">
-                <div>
-                  <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm uppercase tracking-wider mb-2">
-                    <MapPin className="w-4 h-4" /> Ubytování
-                  </div>
-                  <h3 className="text-xl font-bold font-display text-slate-900 mb-1">Pension Baranekhof</h3>
-                  <p className="text-sm text-slate-500 mb-4">Spatlahnerweg 13, 5710 Kaprun, Rakousko</p>
-
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <div className="flex items-start gap-2">
-                      <span className="font-semibold text-slate-800 shrink-0">Výhody pensionu:</span>
-                      <span>Český personál, skvělé zázemí pro turisty, rodinná atmosféra, vydatné snídaně.</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="font-semibold text-slate-800 shrink-0">Check-in:</span>
-                      <span>Od 14:00 (kontaktujte předem v případě pozdního příjezdu).</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-slate-100">
-                  <a
-                    href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/50 transition-colors"
-                  >
-                    <Navigation className="w-3.5 h-3.5" /> Baranekhof na Mapy.cz
-                  </a>
-                  <a
-                    href="https://baranekresorts.com/cs/dum/baranekhof"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" /> Webová prezentace <span className="text-slate-400 font-normal">(CZ)</span>
-                  </a>
-                </div>
-              </div>
-
               {/* Weather Forecast Panel */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
@@ -748,11 +707,19 @@ export default function Home() {
                         {/* Destination Header Trigger */}
                         <button
                           onClick={() => setExpandedDay(isExpanded ? null : dest.id)}
-                          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50/50 transition-colors"
+                          className="group w-full flex items-center justify-between p-4 text-left hover:bg-slate-50/50 transition-colors"
                         >
                           <div className="flex items-center gap-3.5">
-                            <div className="bg-emerald-50 text-emerald-700 rounded-xl p-2.5 shrink-0 flex items-center justify-center">
-                              <MapPin className="w-5 h-5 text-emerald-600" />
+                            <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm border border-slate-200/60 bg-slate-100 flex items-center justify-center">
+                              {dest.imageUrl ? (
+                                <img
+                                  src={dest.imageUrl}
+                                  alt={dest.name}
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                              ) : (
+                                <MapPin className="w-5 h-5 text-emerald-600" />
+                              )}
                             </div>
                             <div>
                               <div className="text-[10px] text-emerald-600 font-mono tracking-wider uppercase font-semibold">{dest.type}</div>
@@ -768,24 +735,36 @@ export default function Home() {
                         {isExpanded && (
                           <div className="px-5 pb-5 border-t border-slate-100 bg-slate-50/30">
                             <div className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-5">
-                              {/* Left Side: Description & Highlights */}
-                              <div className="space-y-3">
-                                <div>
-                                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">O místě</span>
-                                  <p className="text-sm text-slate-600 leading-relaxed">{dest.description}</p>
+                              {/* Left Side: Description, Highlights & Big Photo */}
+                              <div className="space-y-4 flex flex-col justify-between">
+                                <div className="space-y-3">
+                                  <div>
+                                    <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">O místě</span>
+                                    <p className="text-sm text-slate-600 leading-relaxed">{dest.description}</p>
+                                  </div>
+
+                                  <div>
+                                    <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-2">Hlavní lákadla</span>
+                                    <ul className="space-y-2">
+                                      {dest.highlights.map((highlight, idx) => (
+                                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                                          <span className="text-emerald-500 font-bold shrink-0 mt-0.5">•</span>
+                                          <span>{highlight}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
                                 </div>
 
-                                <div>
-                                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-2">Hlavní lákadla</span>
-                                  <ul className="space-y-2">
-                                    {dest.highlights.map((highlight, idx) => (
-                                      <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                                        <span className="text-emerald-500 font-bold shrink-0 mt-0.5">•</span>
-                                        <span>{highlight}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
+                                {dest.imageUrl && (
+                                  <div className="relative h-44 w-full rounded-xl overflow-hidden border border-slate-200/80 shadow-xs mt-3 bg-slate-100">
+                                    <img
+                                      src={dest.imageUrl}
+                                      alt={dest.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                )}
                               </div>
 
                               {/* Right Side: Tips, SalzburgerLand Card & Notes */}
@@ -887,6 +866,47 @@ export default function Home() {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Hotel & Location Overview */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between" id="overview_cards_grid">
+                <div>
+                  <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm uppercase tracking-wider mb-2">
+                    <MapPin className="w-4 h-4" /> Ubytování
+                  </div>
+                  <h3 className="text-xl font-bold font-display text-slate-900 mb-1">Pension Baranekhof</h3>
+                  <p className="text-sm text-slate-500 mb-4">Spatlahnerweg 13, 5710 Kaprun, Rakousko</p>
+
+                  <div className="space-y-2 text-sm text-slate-600">
+                    <div className="flex items-start gap-2">
+                      <span className="font-semibold text-slate-800 shrink-0">Výhody pensionu:</span>
+                      <span>Český personál, skvělé zázemí pro turisty, rodinná atmosféra, vydatné snídaně.</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="font-semibold text-slate-800 shrink-0">Check-in:</span>
+                      <span>Od 14:00 (kontaktujte předem v případě pozdního příjezdu).</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-slate-100">
+                  <a
+                    href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/50 transition-colors"
+                  >
+                    <Navigation className="w-3.5 h-3.5" /> Baranekhof na Mapy.cz
+                  </a>
+                  <a
+                    href="https://baranekresorts.com/cs/dum/baranekhof"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> Webová prezentace <span className="text-slate-400 font-normal">(CZ)</span>
+                  </a>
                 </div>
               </div>
             </motion.div>

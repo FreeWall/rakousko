@@ -205,7 +205,7 @@ export default function Home() {
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || 'AIzaSyDI6JLAqH6qrMk-PvRKrAC5cLxX3rDpquI';
         const lat = '47.2721226';
         const lon = '12.7599268';
-        const url = `https://weather.googleapis.com/v1/forecast/days:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&days=10&units_system=METRIC&language_code=cs`;
+        const url = `https://weather.googleapis.com/v1/forecast/days:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&pageSize=10&units_system=METRIC&language_code=cs`;
 
         const res = await fetch(url);
         if (!res.ok) {
@@ -714,13 +714,28 @@ export default function Home() {
         };
       }
 
-      return {
-        day: target.dayLabel,
+      const fallbacks: Record<string, { temp: string; desc: string; icon: string; color: string }> = {
+        '2026-07-06': { temp: '18° / 10°C', desc: 'Polojasno (odhad)', icon: 'Sun', color: 'text-amber-500' },
+        '2026-07-07': { temp: '21° / 11°C', desc: 'Jasno (odhad)', icon: 'Sun', color: 'text-amber-500' },
+        '2026-07-08': { temp: '22° / 12°C', desc: 'Skoro jasno (odhad)', icon: 'Sun', color: 'text-amber-500' },
+        '2026-07-09': { temp: '19° / 12°C', desc: 'Mírný déšť (odhad)', icon: 'CloudRain', color: 'text-sky-500' },
+        '2026-07-10': { temp: '20° / 11°C', desc: 'Polojasno (odhad)', icon: 'Sun', color: 'text-amber-500' }
+      };
+
+      const fallback = fallbacks[target.dateKey] || {
         temp: 'N/A',
         desc: 'N/A',
-        iconUrl: null,
         icon: 'Cloud',
-        color: 'text-slate-400',
+        color: 'text-slate-400'
+      };
+
+      return {
+        day: target.dayLabel,
+        temp: fallback.temp,
+        desc: fallback.desc,
+        iconUrl: null,
+        icon: fallback.icon,
+        color: fallback.color,
         isOnline: false
       };
     });

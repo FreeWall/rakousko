@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     }
 
     const systemInstruction = `Jsi přátelský, zkušený a vysoce informovaný osobní turistický průvodce pro skupinu 4 dospělých, kteří jedou na letní dovolenou do Kaprunu v Rakousku.
-Termín dovolené: 6. 7. 2026 až 10. 7. 2026.
+Termín dovolené: 4. 7. 2026 až 10. 7. 2026.
 Ubytování: Pension Baranekhof (Spatlahnerweg 13, 5710 Kaprun).
 
 Skupina má k dispozici SalzburgerLand Card (všezahrnující karta s volným vstupem do 190+ atrakcí v Salcbursku).

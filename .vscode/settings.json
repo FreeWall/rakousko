@@ -1,0 +1,65 @@
+{
+  "tailwindCSS.experimental.classRegex": [
+    "@tw\\s\\*\/\\s+[\"'`]([^\"'`]*)",
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*)[\"'`]"]
+  ],
+  "eslint.validate": ["typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/yarn.lock": true,
+    "**/package-lock.json": true
+  },
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.allowForcePush": true,
+  "workbench.startupEditor": "newUntitledFile",
+  "editor.minimap.maxColumn": 150,
+  "editor.minimap.showSlider": "always",
+  "window.title": "${rootName} | ${activeEditorMedium}",
+  "workbench.view.alwaysShowHeaderActions": true,
+  "editor.guides.indentation": false,
+  "workbench.tree.indent": 14,
+  "search.quickOpen.history.filterSortOrder": "recency",
+  "files.eol": "\n",
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "debug.console.fontSize": 13,
+  "markdown.preview.fontSize": 13,
+  "terminal.integrated.fontSize": 13,
+  "editor.padding.bottom": 80,
+  "editor.scrollBeyondLastLine": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "git.mergeEditor": true,
+  "scm.showActionButton": false,
+  "editor.suggest.preview": true,
+  "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
+  "explorer.autoReveal": false,
+  "workbench.list.openMode": "doubleClick",
+  "workbench.tree.expandMode": "doubleClick",
+  "editor.autoClosingBrackets": "always",
+  "editor.autoClosingQuotes": "always",
+  "editor.smoothScrolling": true,
+  "git.fetchOnPull": true,
+  "git.pruneOnFetch": true,
+  "terminal.integrated.scrollback": 10000,
+  "workbench.editor.empty.hint": "hidden",
+  "git.ignoreRebaseWarning": true,
+  "agCockpit.groupingEnabled": false,
+  "agCockpit.statusBarFormat": "compact",
+  "agCockpit.warningThreshold": 79,
+  "agCockpit.criticalThreshold": 39,
+  "accessibility.signalOptions.volume": 30,
+  "workbench.editor.enablePreview": false
+}

@@ -74,6 +74,10 @@ interface Destination {
   mapyUrl?: string;
   slCardInfo?: string;
   noteKey: string;
+  cableCarHours?: string;
+  cableCarDuration?: string;
+  dogPrice?: string;
+  webUrl?: string;
 }
 
 export default function Home() {
@@ -252,7 +256,7 @@ export default function Home() {
     });
 
     // Countdown calc
-    const targetDate = new Date('2026-07-06T08:00:00').getTime();
+    const targetDate = new Date('2026-07-04T08:00:00').getTime();
     const endDate = new Date('2026-07-10T18:00:00').getTime();
 
     const interval = setInterval(() => {
@@ -569,7 +573,11 @@ export default function Home() {
       tips: 'Teploty nahoře bývají kolem nuly i v červenci, nezapomeňte zimní bundu a pevné pohorky! Vyrazte hned ráno.',
       mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=6306234',
       slCardInfo: 'Jednorázový výjezd a sjezd lanovkou zdarma.',
-      noteKey: 'note_kitzsteinhorn'
+      noteKey: 'note_kitzsteinhorn',
+      cableCarHours: '8:30 – 16:45',
+      cableCarDuration: 'cca 30–40 min',
+      dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
+      webUrl: 'https://www.kitzsteinhorn.at'
     },
     {
       id: 'sigmund_thun_klam',
@@ -584,7 +592,8 @@ export default function Home() {
       tips: 'Nachází se jen pár minut chůze od Pensionu Baranekhof. Vhodné i za méně stabilního počasí.',
       mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=12020854',
       slCardInfo: 'Vstup do soutěsky Sigmund-Thun-Klamm je zdarma.',
-      noteKey: 'note_sigmund'
+      noteKey: 'note_sigmund',
+      webUrl: 'https://www.klamm-kaprun.at'
     },
     {
       id: 'mooserboden',
@@ -599,7 +608,11 @@ export default function Home() {
       tips: 'Skvělý výchozí bod pro další vysokohorské túry. Poslední autobus dolů jede kolem 16:45.',
       mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=96102629',
       slCardInfo: 'Výrazná sleva na kombinovanou jízdenku.',
-      noteKey: 'note_mooserboden'
+      noteKey: 'note_mooserboden',
+      cableCarHours: '8:10 – 16:45 (poslední bus dolů)',
+      cableCarDuration: 'cca 45 min (bus + výtah + bus)',
+      dogPrice: '9,00 € (nutný náhubek + vodítko)',
+      webUrl: 'https://www.verbund.com/kaprun'
     },
     {
       id: 'maiskogel',
@@ -614,7 +627,11 @@ export default function Home() {
       tips: 'Ideální cíl na aklimatizaci nebo půldenní rodinnou turistiku s dětmi.',
       mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1066791681',
       slCardInfo: 'Jízda lanovkou zdarma, na bobovou dráhu platí sleva.',
-      noteKey: 'note_maiskogel'
+      noteKey: 'note_maiskogel',
+      cableCarHours: '9:00 – 17:00',
+      cableCarDuration: 'cca 10 min',
+      dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
+      webUrl: 'https://www.kitzsteinhorn.at/maiskogel'
     },
     {
       id: 'zell_am_see',
@@ -629,7 +646,11 @@ export default function Home() {
       tips: 'Vyhlídková plavba lodí je velmi populární, vyplatí se zkontrolovat plavební řád předem.',
       mapyUrl: 'https://mapy.com/cs/turisticka?planovani-trasy&rc=9dVMaxKKxS575adY-fxKNO2dtKeP5&rs=osm&rs=pubt&rs=osm&rs=osm&ri=150040160&ri=28043547&ri=1040825275&ri=1063743585&mrp=%7B%22c%22%3A132%2C%22dt%22%3A%22%22%2C%22d%22%3Atrue%7D&xc=%5B%5D&x=12.8004831&y=47.3276843&z=14',
       slCardInfo: 'Okružní plavba lodí i jízda lanovkou na Schmittenhöhe jsou zdarma.',
-      noteKey: 'note_zell'
+      noteKey: 'note_zell',
+      cableCarHours: '9:00 – 17:00',
+      cableCarDuration: 'cca 10 min',
+      dogPrice: '8,50 € / den (nutný náhubek + vodítko)',
+      webUrl: 'https://www.schmitten.at'
     },
     {
       id: 'krimml_waterfalls',
@@ -643,8 +664,9 @@ export default function Home() {
       ],
       tips: 'Vezměte si pláštěnku nebo nepromokavou bundu, vodní tříšť stříká daleko na vyhlídkové plošiny.',
       mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=11998097',
-      slCardInfo: 'Vstup k vodopádům a parkování zdarma.',
-      noteKey: 'note_krimml'
+      slCardInfo: 'Vstup k vodopádnám a parkování zdarma.',
+      noteKey: 'note_krimml',
+      webUrl: 'https://www.krimmler-wasserwelten.at'
     },
     {
       id: 'tauern_spa',
@@ -659,13 +681,16 @@ export default function Home() {
       tips: 'Ideální program pro deštivé odpoledne nebo pro zasloužený odpočinek po celodenní túře.',
       mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1025788061',
       slCardInfo: 'Sleva na vstupné s kartou.',
-      noteKey: 'note_tauern'
+      noteKey: 'note_tauern',
+      webUrl: 'https://www.tauernspakaprun.com'
     }
   ];
 
-  // Weather display list processing for the specific trip week: 6.7. - 10.7.2026
+  // Weather display list processing for the specific trip week: 4.7. - 10.7.2026
   const displayWeather = (() => {
     const targetDates = [
+      { dateKey: '2026-07-04', dayLabel: 'So 4.7.' },
+      { dateKey: '2026-07-05', dayLabel: 'Ne 5.7.' },
       { dateKey: '2026-07-06', dayLabel: 'Po 6.7.' },
       { dateKey: '2026-07-07', dayLabel: 'Út 7.7.' },
       { dateKey: '2026-07-08', dayLabel: 'St 8.7.' },
@@ -942,7 +967,7 @@ export default function Home() {
                     <p className="text-xs text-slate-400">Stahuji aktuální data z Google Weather...</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-7 gap-3">
                     {displayWeather.map((w, idx) => (
                       <div key={idx} className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-center flex flex-col items-center justify-center transition-all hover:bg-slate-100/50">
                         <span className="text-xs font-semibold text-slate-500">{w.day}</span>
@@ -1043,20 +1068,63 @@ export default function Home() {
                                       </div>
                                     </div>
                                   )}
+
+                                  {/* Cable car operating details and dog price */}
+                                  {(dest.cableCarHours || dest.cableCarDuration || dest.dogPrice) && (
+                                    <div className="bg-slate-100/70 border border-slate-200 rounded-xl p-3 text-xs text-slate-700 space-y-2">
+                                      <div className="font-bold flex items-center gap-1.5 text-slate-800">
+                                        <Mountain className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Detaily dopravy / lanovky
+                                      </div>
+                                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                                        {dest.cableCarHours && (
+                                          <div>
+                                            <span className="text-[10px] uppercase font-mono text-slate-400 block leading-tight">Provoz</span>
+                                            <span className="font-medium text-slate-900">{dest.cableCarHours}</span>
+                                          </div>
+                                        )}
+                                        {dest.cableCarDuration && (
+                                          <div>
+                                            <span className="text-[10px] uppercase font-mono text-slate-400 block leading-tight">Doba jízdy</span>
+                                            <span className="font-medium text-slate-900">{dest.cableCarDuration}</span>
+                                          </div>
+                                        )}
+                                        {dest.dogPrice && (
+                                          <div>
+                                            <span className="text-[10px] uppercase font-mono text-slate-400 block leading-tight">Pes</span>
+                                            <span className="font-medium text-slate-900">{dest.dogPrice}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
 
                                 {/* Custom Note Box & Links */}
                                 <div className="space-y-3 pt-2">
-                                  {/* Interactive Mapy.cz link if available */}
-                                  {dest.mapyUrl && (
-                                    <a
-                                      href={dest.mapyUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-white text-emerald-700 hover:bg-emerald-50 border border-slate-200 transition-colors shadow-sm w-full justify-center"
-                                    >
-                                      <Navigation className="w-3.5 h-3.5" /> Zobrazit trasu na Mapy.cz
-                                    </a>
+                                  {/* Links */}
+                                  {(dest.mapyUrl || dest.webUrl) && (
+                                    <div className="flex gap-2">
+                                      {dest.mapyUrl && (
+                                        <a
+                                          href={dest.mapyUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex-1 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-white text-emerald-700 hover:bg-emerald-50 border border-slate-200 transition-colors shadow-sm justify-center"
+                                        >
+                                          <Navigation className="w-3.5 h-3.5" /> Trasa na Mapy.cz
+                                        </a>
+                                      )}
+                                      {dest.webUrl && (
+                                        <a
+                                          href={dest.webUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex-1 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors shadow-sm justify-center border border-slate-200"
+                                        >
+                                          <ExternalLink className="w-3.5 h-3.5 text-slate-500" /> Oficiální web
+                                        </a>
+                                      )}
+                                    </div>
                                   )}
 
                                   <div className="space-y-1.5">
@@ -1661,7 +1729,7 @@ export default function Home() {
 
       {/* Humble craft footer */}
       <footer className="bg-slate-100 border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500 shrink-0" id="footer">
-        Aktivní Dovolená Kaprun &bull; 6.7.2026 - 10.7.2026 &bull; Pension Baranekhof &bull; Vyrobeno s láskou k horám 🏔️
+        Aktivní Dovolená Kaprun &bull; 4.7.2026 - 10.7.2026 &bull; Pension Baranekhof &bull; Vyrobeno s láskou k horám 🏔️
       </footer>
     </div>
   );

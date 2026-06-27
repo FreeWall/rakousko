@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
+import { Agentation } from 'agentation';
 import './globals.css'; // Global styles
 
 const inter = Inter({
@@ -24,6 +25,9 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
     <html lang="cs" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="font-sans antialiased text-slate-900 bg-slate-50/50" suppressHydrationWarning>
         {children}
+        {process.env.NODE_ENV === 'development' && (
+          <Agentation endpoint="http://localhost:4747" />
+        )}
       </body>
     </html>
   );

@@ -698,9 +698,9 @@ export default function Home() {
         const iconBaseUri = matchedApiDay.daytimeForecast?.weatherCondition?.iconBaseUri;
         const iconUrl = iconBaseUri ? `${iconBaseUri}.png` : null;
 
-        const isRain = desc.toLowerCase().includes('déšť') || 
-                       desc.toLowerCase().includes('sráž') || 
-                       desc.toLowerCase().includes('přeháň') || 
+        const isRain = desc.toLowerCase().includes('déšť') ||
+                       desc.toLowerCase().includes('sráž') ||
+                       desc.toLowerCase().includes('přeháň') ||
                        desc.toLowerCase().includes('bouř');
 
         return {
@@ -714,15 +714,7 @@ export default function Home() {
         };
       }
 
-      const fallbacks: Record<string, { temp: string; desc: string; icon: string; color: string }> = {
-        '2026-07-06': { temp: '18° / 10°C', desc: 'Polojasno (odhad)', icon: 'Sun', color: 'text-amber-500' },
-        '2026-07-07': { temp: '21° / 11°C', desc: 'Jasno (odhad)', icon: 'Sun', color: 'text-amber-500' },
-        '2026-07-08': { temp: '22° / 12°C', desc: 'Skoro jasno (odhad)', icon: 'Sun', color: 'text-amber-500' },
-        '2026-07-09': { temp: '19° / 12°C', desc: 'Mírný déšť (odhad)', icon: 'CloudRain', color: 'text-sky-500' },
-        '2026-07-10': { temp: '20° / 11°C', desc: 'Polojasno (odhad)', icon: 'Sun', color: 'text-amber-500' }
-      };
-
-      const fallback = fallbacks[target.dateKey] || {
+      const fallback = {
         temp: 'N/A',
         desc: 'N/A',
         icon: 'Cloud',

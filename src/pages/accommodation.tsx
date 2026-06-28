@@ -46,7 +46,7 @@ export default function Accommodation() {
           </div>
 
           {/* Two column grid */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="gap-6 md:grid-cols-3">
             {/* Left/Middle Column: Vital details */}
             <div className="space-y-6 md:col-span-2">
               {/* Unified Info Card */}
@@ -55,7 +55,7 @@ export default function Accommodation() {
                   {infoItems.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex justify-between py-3 text-sm"
+                      className="flex justify-between py-3 text-sm first:pt-0"
                     >
                       <span className="font-medium text-slate-600">{item.label}</span>
                       {item.href ? (
@@ -70,38 +70,25 @@ export default function Accommodation() {
                       )}
                     </div>
                   ))}
+                  <div className="flex justify-end gap-3 pt-3 text-sm">
+                    <LinkButton
+                      variant="external"
+                      href="https://baranekresorts.com/cs/dum/baranekhof"
+                    >
+                      Oficiální web
+                    </LinkButton>
+                    <LinkButton
+                      variant="googlemaps"
+                      href="https://www.google.com/maps/search/?api=1&query=Pension+Baranekhof+Kaprun+Austria"
+                      type="icon"
+                    ></LinkButton>
+                    <LinkButton
+                      variant="mapycz"
+                      href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
+                      type="icon"
+                    ></LinkButton>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Right Column: Address and links */}
-            <div className="space-y-6">
-              {/* Action Links & Location Map */}
-              <div className="flex flex-col gap-2.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h4 className="font-display mb-1 text-base font-bold text-slate-900">
-                  Rychlé odkazy
-                </h4>
-
-                <LinkButton
-                  variant="mapycz"
-                  href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
-                >
-                  Otevřít v Mapy.cz
-                </LinkButton>
-
-                <LinkButton
-                  variant="googlemaps"
-                  href="https://www.google.com/maps/search/?api=1&query=Pension+Baranekhof+Kaprun+Austria"
-                >
-                  Otevřít v Google Maps
-                </LinkButton>
-
-                <LinkButton
-                  variant="external"
-                  href="https://baranekresorts.com/cs/dum/baranekhof"
-                >
-                  Oficiální web
-                </LinkButton>
               </div>
             </div>
           </div>

@@ -1,59 +1,11 @@
-import {
-  Car,
-  Coffee,
-  Compass,
-  ExternalLink,
-  KeyRound,
-  MapPin,
-  Navigation,
-  ShieldCheck,
-  Trees,
-  Wifi,
-} from 'lucide-react';
+import { Compass, ExternalLink, MapPin, Navigation } from 'lucide-react';
 import { motion } from 'motion/react';
 import React from 'react';
 
 import Header from '@/components/Header';
 
 export default function Accommodation() {
-  const address = 'Spatlahnerweg 13, 5710 Kaprun, Rakousko';
-
-  const advantages = [
-    {
-      icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
-      title: 'Český personál',
-      description:
-        'Penzion provozují Češi, domluvíte se snadno a získáte nejlepší lokální tipy v mateřštině.',
-    },
-    {
-      icon: <Coffee className="h-5 w-5 text-emerald-600" />,
-      title: 'Vydatné snídaně',
-      description:
-        'Bohaté buffetové snídaně s čerstvým pečivem, které vám dodají energii na celodenní túry.',
-    },
-    {
-      icon: <Car className="h-5 w-5 text-emerald-600" />,
-      title: 'Parkování zdarma',
-      description: 'Přímo u budovy penzionu je dostatek parkovacích míst zdarma pro všechny hosty.',
-    },
-    {
-      icon: <Wifi className="h-5 w-5 text-emerald-600" />,
-      title: 'Rychlá Wi-Fi',
-      description: 'Bezplatné bezdrátové připojení k internetu je dostupné v celém objektu.',
-    },
-    {
-      icon: <KeyRound className="h-5 w-5 text-emerald-600" />,
-      title: 'Zázemí pro turisty',
-      description:
-        'K dispozici je kolárna / lyžárna a sušárna bot pro pohodlné uložení vašeho vybavení.',
-    },
-    {
-      icon: <Trees className="h-5 w-5 text-emerald-600" />,
-      title: 'Společenská místnost',
-      description:
-        'Sdílená, skvěle vybavená kuchyňka a společný prostor pro večerní plánování tras.',
-    },
-  ];
+  const address = 'Kesselfallstraße 63, 5710 Kaprun';
 
   const distances = [
     { target: 'Centrum Kaprunu (obchody, restaurace)', dist: '1.2 km' },
@@ -61,6 +13,13 @@ export default function Accommodation() {
     { target: 'Soutěska Sigmund-Thun-Klamm', dist: '1.8 km' },
     { target: 'Lázně a bazény Tauern Spa Kaprun', dist: '2.5 km' },
     { target: 'Jezero a město Zell am See', dist: '7.5 km' },
+  ];
+
+  const infoItems = [
+    { label: 'Check-in (Příjezd)', value: 'Od 15:00' },
+    { label: 'Check-out (Odjezd)', value: 'Do 10:00' },
+    { label: 'Telefon', value: '+420 777 201 423', href: 'tel:+420777201423' },
+    { label: 'E-mail', value: 'info@baranekresorts.com', href: 'mailto:info@baranekresorts.com' },
   ];
 
   return (
@@ -97,40 +56,34 @@ export default function Accommodation() {
                 </p>
               </div>
             </div>
-
-            <div className="p-5 md:p-6">
-              <p className="text-sm leading-relaxed text-slate-600">
-                Baranekhof je útulný alpský penzion rodinného typu nacházející se v klidné části
-                Kaprunu, obklopený dechberoucím panoramatem Vysokých Taur. Vyznačuje se přátelskou
-                atmosférou, pohodlným zázemím a především <strong>českým provozem</strong>, díky
-                čemuž je ideálním výchozím bodem pro české turisty a sportovce.
-              </p>
-            </div>
           </div>
 
           {/* Two column grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {/* Left/Middle Column: Advantages and Info */}
+            {/* Left/Middle Column: Vital details */}
             <div className="space-y-6 md:col-span-2">
+              {/* Unified Info Card */}
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 className="font-display mb-4 text-lg font-bold text-slate-900">
-                  Proč se ubytovat právě u nás?
+                  Důležité informace
                 </h3>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {advantages.map((adv, idx) => (
+                <div className="divide-y divide-slate-100">
+                  {infoItems.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex gap-3"
+                      className="flex justify-between py-3 text-sm"
                     >
-                      <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50">
-                        {adv.icon}
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-slate-900">{adv.title}</h4>
-                        <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
-                          {adv.description}
-                        </p>
-                      </div>
+                      <span className="font-medium text-slate-600">{item.label}</span>
+                      {item.href ? (
+                        <a
+                          href={item.href}
+                          className="font-bold text-emerald-600 transition-colors hover:text-emerald-700 hover:underline"
+                        >
+                          {item.value}
+                        </a>
+                      ) : (
+                        <span className="font-bold text-slate-900">{item.value}</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -148,49 +101,20 @@ export default function Accommodation() {
                       className="flex justify-between py-2.5 text-sm"
                     >
                       <span className="text-slate-600">{item.target}</span>
-                      <span className="font-mono font-bold text-slate-900">{item.dist}</span>
+                      <span className="font-bold text-slate-900">{item.dist}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Check-in, contacts and links */}
+            {/* Right Column: Address and links */}
             <div className="space-y-6">
-              {/* Check-in Card */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h4 className="font-display mb-3 text-base font-bold text-slate-900">
-                  Příjezd & Odjezd
-                </h4>
-                <div className="space-y-3.5 text-xs">
-                  <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                    <span className="block font-mono text-[10px] tracking-wider text-slate-400 uppercase">
-                      Check-in (Příjezd)
-                    </span>
-                    <span className="text-sm font-bold text-slate-800">Od 15:00 hod</span>
-                    <p className="mt-1 text-slate-500">
-                      Pokud dorazíte později, dejte prosím vědět předem na recepci penzionu.
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                    <span className="block font-mono text-[10px] tracking-wider text-slate-400 uppercase">
-                      Check-out (Odjezd)
-                    </span>
-                    <span className="text-sm font-bold text-slate-800">Do 10:00 hod</span>
-                    <p className="mt-1 text-slate-500">
-                      V den odjezdu je nutné vyklidit pokoj pro přípravu novým hostům.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               {/* Action Links & Location Map */}
               <div className="flex flex-col gap-2.5 rounded-2xl bg-slate-900 p-5 text-white shadow-sm">
-                <h4 className="font-display mb-1 text-base font-bold text-white">Rychlé Odkazy</h4>
-                <p className="mb-3 text-[11px] text-slate-400">
-                  Naplánujte si cestu nebo si prohlédněte oficiální stránky s fotogalerií a
-                  kontakty.
-                </p>
+                <h4 className="font-display mb-1 text-base font-bold text-white">
+                  Rychlé odkazy
+                </h4>
 
                 <a
                   href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
@@ -202,10 +126,19 @@ export default function Accommodation() {
                 </a>
 
                 <a
-                  href="https://baranekresorts.com/cs/dum/baranekhof"
+                  href="https://www.google.com/maps/search/?api=1&query=Pension+Baranekhof+Kaprun+Austria"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+                >
+                  <MapPin className="h-4 w-4" /> Baranekhof na Google Maps
+                </a>
+
+                <a
+                  href="https://baranekresorts.com/cs/dum/baranekhof"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-850 px-4 py-2.5 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-300"
                 >
                   <ExternalLink className="h-4 w-4" /> Oficiální Web (Česky)
                 </a>

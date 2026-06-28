@@ -25,7 +25,6 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
     { href: '/hikes', label: 'Trasy Mapy.cz', Icon: Compass },
     { href: '/card', label: 'Salzburger Card', Icon: CreditCard },
     {
-      id: 'tab_map',
       href: '/map',
       label: 'Mapa destinací',
       Icon: Map,
@@ -71,10 +70,9 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
         id="navigation_bar"
       >
         <div className="flex w-full max-w-4xl gap-1.5">
-          {navItems.map(({ id, href, label, Icon, iconColor }) => (
+          {navItems.map(({ href, label, Icon, iconColor }) => (
             <Link
-              key={id}
-              id={id}
+              key={href}
               href={href}
               className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
                 isActive(href)

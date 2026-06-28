@@ -81,6 +81,8 @@ export default function WeatherForecast() {
 
         return {
           day: target.dayLabel,
+          maxTemp: maxTemp !== undefined ? `${Math.round(maxTemp)}°` : null,
+          minTemp: minTemp !== undefined ? `${Math.round(minTemp)}°` : null,
           temp,
           desc,
           iconUrl,
@@ -99,6 +101,8 @@ export default function WeatherForecast() {
 
       return {
         day: target.dayLabel,
+        maxTemp: null,
+        minTemp: null,
         temp: fallback.temp,
         desc: fallback.desc,
         iconUrl: null,
@@ -151,7 +155,16 @@ export default function WeatherForecast() {
               ) : (
                 <CloudRain className={`my-2 h-6 w-6 ${w.color}`} />
               )}
-              <span className="text-sm font-bold text-slate-800">{w.temp}</span>
+              <div className="text-sm font-bold text-slate-800">
+                {w.maxTemp ? (
+                  <>
+                    <span>{w.maxTemp}</span>
+                    {w.minTemp && <span className="text-slate-400"> / {w.minTemp}</span>}
+                  </>
+                ) : (
+                  <span>{w.temp}</span>
+                )}
+              </div>
             </div>
           ))}
         </div>

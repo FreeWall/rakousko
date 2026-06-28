@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { 
   Mountain, 
   MapPin, 
-  Sparkles,
   Calendar,
   Compass,
   CreditCard,
@@ -78,13 +77,6 @@ export default function MapPage() {
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all shrink-0 border bg-transparent border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           >
             <CreditCard className="w-4 h-4" /> Salzburger Card
-          </Link>
-          <Link
-            id="tab_ai"
-            href="/?tab=ai"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all shrink-0 border bg-transparent border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          >
-            <Sparkles className="w-4 h-4 text-emerald-500" /> AI Průvodce
           </Link>
           <div
             id="tab_map"

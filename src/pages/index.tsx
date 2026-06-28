@@ -17,13 +17,11 @@ import {
   Mountain,
   Navigation,
   RefreshCw,
-  Send,
-  Sparkles,
   Sun,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Types
 interface Participant {
@@ -39,16 +37,11 @@ interface Expense {
   sharedWith: string[]; // Array of IDs
 }
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
 import { destinations } from '@/lib/destinations';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'hikes' | 'card' | 'ai'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'hikes' | 'card'>('overview');
 
   // Time States
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -130,18 +123,6 @@ export default function Home() {
     },
   ];
 
-  // AI Chat States
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content:
-        'Ahoj! Jsem váš osobní horský průvodce pro Kaprun a okolí. Mám v kapse informace o vašem ubytování v Pensionu Baranekhof, všech 3 naplánovaných trasách z Mapy.cz, o výhodách SalzburgerLand Card a o tom, co dělat, když začne v Alpách pršet. Na co se chcete zeptat?',
-    },
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-
   // Expanded Destination state in Overview
   const [expandedDay, setExpandedDay] = useState<string | null>('kitzsteinhorn');
 
@@ -188,7 +169,7 @@ export default function Home() {
       try {
         const params = new URLSearchParams(window.location.search);
         const tab = params.get('tab');
-        if (tab && ['overview', 'hikes', 'card', 'ai'].includes(tab)) {
+        if (tab && ['overview', 'hikes', 'card'].includes(tab)) {
           setActiveTab(tab as any);
         }
 
@@ -255,10 +236,7 @@ export default function Home() {
     localStorage.setItem('kaprun_notes', JSON.stringify(itineraryNotes));
   }, [itineraryNotes, mounted]);
 
-  // Scroll to chat bottom
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+
 
   // Calculations for Splitter
   const handleAddExpense = (e: React.FormEvent) => {
@@ -424,46 +402,7 @@ export default function Home() {
     });
   };
 
-  // Ask AI Action
-  const handleSendMessage = async (e?: React.FormEvent, customPrompt?: string) => {
-    if (e) e.preventDefault();
-    const promptToSend = customPrompt || inputValue;
-    if (!promptToSend.trim() || isAiLoading) return;
 
-    const userMessage: Message = { role: 'user', content: promptToSend };
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue('');
-    setIsAiLoading(true);
-
-    try {
-      const response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-        }),
-      });
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.content }]);
-    } catch (err: any) {
-      console.error('Error fetching from AI:', err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            'Omlouvám se, ale nepodařilo se mi spojit se serverem. Zkontrolujte prosím připojení k internetu a zkuste to znovu.',
-        },
-      ]);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   // Weather display list processing for the specific trip week: 4.7. - 10.7.2026
   const displayWeather = (() => {
@@ -660,17 +599,7 @@ export default function Home() {
             <CreditCard className="h-4 w-4" /> Salzburger Card
           </button>
 
-          <button
-            id="tab_ai"
-            onClick={() => setActiveTab('ai')}
-            className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
-              activeTab === 'ai'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
-                : 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            <Sparkles className="h-4 w-4 text-emerald-500" /> AI Průvodce
-          </button>
+
           <Link
             id="tab_map"
             href="/map"
@@ -1445,126 +1374,7 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* TAB 6: AI HOLIDAY ASSISTANT */}
-          {activeTab === 'ai' && (
-            <motion.div
-              key="ai"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex h-[600px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-            >
-              {/* Chat Header */}
-              <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 p-4 text-white">
-                <div className="flex items-center gap-2.5">
-                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/15 p-1.5 text-emerald-400">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold">Osobní AI průvodce</h3>
-                    <div className="flex items-center gap-1 font-mono text-[10px] text-slate-400">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />{' '}
-                      Aktivní na serveru
-                    </div>
-                  </div>
-                </div>
-                <span className="font-mono text-[10px] text-slate-400">
-                  Powered by Gemini 3.5 Flash
-                </span>
-              </div>
 
-              {/* Chat Messages */}
-              <div
-                className="flex-1 space-y-4 overflow-y-auto bg-slate-50/50 p-4"
-                id="chat_box"
-              >
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[85%] rounded-2xl p-4 text-sm ${
-                        msg.role === 'user'
-                          ? 'rounded-br-none bg-slate-900 text-white'
-                          : 'rounded-bl-none border border-slate-200 bg-white leading-relaxed whitespace-pre-wrap text-slate-800 shadow-sm'
-                      }`}
-                    >
-                      {msg.role === 'assistant' && (
-                        <div className="mb-1 flex items-center gap-1.5 font-mono text-xs font-bold tracking-wider text-emerald-600 uppercase">
-                          <Compass className="h-3.5 w-3.5" /> AI Průvodce
-                        </div>
-                      )}
-                      {msg.content}
-                    </div>
-                  </div>
-                ))}
-
-                {isAiLoading && (
-                  <div className="flex justify-start">
-                    <div className="flex items-center gap-2 rounded-2xl rounded-bl-none border border-slate-200 bg-white p-4 text-sm text-slate-500 shadow-sm">
-                      <RefreshCw className="h-4 w-4 animate-spin text-emerald-600" />
-                      <span className="font-mono text-xs">Průvodce přemýšlí...</span>
-                    </div>
-                  </div>
-                )}
-                <div ref={chatEndRef} />
-              </div>
-
-              {/* Suggested Prompts */}
-              <div className="flex shrink-0 scrollbar-none gap-2 overflow-x-auto border-t border-slate-100 bg-white px-4 py-2">
-                {[
-                  {
-                    text: '🌧️ Co dělat, když prší?',
-                    q: 'Co doporučuješ dělat v Kaprunu za deštivého dne pro 4 dospělé?',
-                  },
-                  {
-                    text: '❄️ Tipy na ledovec',
-                    q: 'Co přesně si sbalit na Kitzsteinhorn v červenci a co tam vidět?',
-                  },
-                  {
-                    text: '🏡 Info o ubytování',
-                    q: 'Řekni mi více o Pensionu Baranekhof v Kaprunu.',
-                  },
-                  {
-                    text: '🇩🇪 Fráze na chatě',
-                    q: 'Napiš mi užitečné německé fráze pro objednání jídla na horské chatě v Rakousku a jejich výslovnost.',
-                  },
-                ].map((s, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSendMessage(undefined, s.q)}
-                    className="shrink-0 cursor-pointer rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100"
-                  >
-                    {s.text}
-                  </button>
-                ))}
-              </div>
-
-              {/* Chat Input */}
-              <form
-                onSubmit={handleSendMessage}
-                className="flex shrink-0 gap-2 border-t border-slate-200 bg-white p-3"
-              >
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Zeptejte se na počasí, trasy, tipy na jídlo..."
-                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm transition-all focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"
-                  disabled={isAiLoading}
-                />
-                <button
-                  type="submit"
-                  disabled={!inputValue.trim() || isAiLoading}
-                  className="shrink-0 cursor-pointer rounded-xl bg-emerald-600 p-2.5 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
-                >
-                  <Send className="h-5 w-5" />
-                </button>
-              </form>
-            </motion.div>
-          )}
         </AnimatePresence>
 
         {/* Persistent Emergency Quick Reference / Help */}

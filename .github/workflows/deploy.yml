@@ -22,16 +22,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
       - name: Build
-        run: yarn build && touch ./out/.nojekyll
+        run: yarn deploy
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./out
+          path: ./build
 
   deploy:
     environment:

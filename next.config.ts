@@ -1,37 +1,21 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
+import { PHASE_PRODUCTION_BUILD } from 'next/constants';
 
-const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-  // Allow access to remote image placeholder.
+const nextConfig = (stage: string): NextConfig => ({
+  distDir: stage == PHASE_PRODUCTION_BUILD ? 'build' : '.next',
+  output: stage == PHASE_PRODUCTION_BUILD ? 'export' : undefined,
+  productionBrowserSourceMaps: true,
   images: {
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-        port: '',
-        pathname: '/**', // This allows any path under the hostname
-      },
-    ],
   },
-  output: 'export',
-  transpilePackages: ['motion'],
-  webpack: (config, {dev}) => {
-    // HMR is disabled in AI Studio via DISABLE_HMR env var.
-    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
-    if (dev && process.env.DISABLE_HMR === 'true') {
-      config.watchOptions = {
-        ignored: /.*/,
-      };
-    }
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+    config.experiments.topLevelAwait = true;
     return config;
   },
-};
+});
 
 export default nextConfig;

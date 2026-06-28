@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -15,7 +13,7 @@ import {
 } from 'lucide-react';
 
 // Load MapWidget with SSR disabled because Leaflet requires the browser 'window' object
-const MapWidget = dynamic(() => import('./MapWidget'), {
+const MapWidget = dynamic(() => import('@/components/MapWidget'), {
   ssr: false,
   loading: () => (
     <div className="flex-1 flex items-center justify-center bg-slate-100 min-h-[calc(100vh-180px)]">

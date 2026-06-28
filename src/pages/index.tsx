@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -298,11 +296,14 @@ export default function Home() {
 
   const getOptimalSettlements = () => {
     const balances = calculateBalances();
-    const activeBalances = participants.map(p => ({
-      id: p.id,
-      name: p.name,
-      balance: Math.round(balances[p.id] * 100) / 100
-    }));
+    const activeBalances = participants.map(p => {
+      const balanceVal = balances[p.id] ?? 0;
+      return {
+        id: p.id,
+        name: p.name,
+        balance: Math.round(balanceVal * 100) / 100
+      };
+    });
 
     const debtors = activeBalances.filter(x => x.balance < -0.01).sort((a, b) => a.balance - b.balance);
     const creditors = activeBalances.filter(x => x.balance > 0.01).sort((a, b) => b.balance - a.balance);
@@ -319,6 +320,7 @@ export default function Home() {
     while (dIdx < dBalances.length && cIdx < cBalances.length) {
       const debtor = dBalances[dIdx];
       const creditor = cBalances[cIdx];
+      if (!debtor || !creditor) break;
 
       const transferAmount = Math.min(debtor.balance, creditor.balance);
       if (transferAmount > 0.01) {
@@ -367,7 +369,6 @@ export default function Home() {
   };
 
   const savingsStats = calculateCardSavings();
-
 
   // Update participant name
   const handleUpdateParticipantName = (id: string, newName: string) => {
@@ -427,8 +428,6 @@ export default function Home() {
       setIsAiLoading(false);
     }
   };
-
-
 
   // Weather display list processing for the specific trip week: 4.7. - 10.7.2026
   const displayWeather = (() => {

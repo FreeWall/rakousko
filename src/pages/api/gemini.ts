@@ -1,5 +1,5 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { GoogleGenAI } from '@google/genai';
-import { NextRequest, NextResponse } from 'next/server';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -10,12 +10,16 @@ const ai = new GoogleGenAI({
   },
 });
 
-export async function POST(req: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
   try {
-    const { messages } = await req.json();
+    const { messages } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: 'Missing or invalid messages' }, { status: 400 });
+      return res.status(400).json({ error: 'Missing or invalid messages' });
     }
 
     const systemInstruction = `Jsi přátelský, zkušený a vysoce informovaný osobní turistický průvodce pro skupinu 4 dospělých, kteří jedou na letní dovolenou do Kaprunu v Rakousku.
@@ -53,9 +57,9 @@ Odpovídej vždy v češtině. Buď praktický, stručný a povzbuzující. Pom�
 
     const replyText = response.text || "Omlouvám se, ale nepodařilo se mi vygenerovat odpověď. Zkuste to prosím znovu.";
 
-    return NextResponse.json({ content: replyText });
+    return res.status(200).json({ content: replyText });
   } catch (error: any) {
     console.error('Error in Gemini API:', error);
-    return NextResponse.json({ error: error.message || 'Vnitřní chyba serveru' }, { status: 500 });
+    return res.status(500).json({ error: error.message || 'Vnitřní chyba serveru' });
   }
 }

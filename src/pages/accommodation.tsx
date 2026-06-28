@@ -1,18 +1,9 @@
-import { Compass, ExternalLink, MapPin, Navigation } from 'lucide-react';
+import { ExternalLink, MapPin, Navigation } from 'lucide-react';
 import { motion } from 'motion/react';
 import React from 'react';
 
-
 export default function Accommodation() {
   const address = 'Kesselfallstraße 63, 5710 Kaprun';
-
-  const distances = [
-    { target: 'Centrum Kaprunu (obchody, restaurace)', dist: '1.2 km' },
-    { target: 'Lanovka MK Maiskogelbahn (směr ledovec)', dist: '1.5 km' },
-    { target: 'Soutěska Sigmund-Thun-Klamm', dist: '1.8 km' },
-    { target: 'Lázně a bazény Tauern Spa Kaprun', dist: '2.5 km' },
-    { target: 'Jezero a město Zell am See', dist: '7.5 km' },
-  ];
 
   const infoItems = [
     { label: 'Check-in (Příjezd)', value: 'Od 15:00' },
@@ -23,7 +14,6 @@ export default function Accommodation() {
 
   return (
     <>
-
       {/* Main Responsive Area */}
       <main
         className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 overflow-y-auto px-4 py-6 md:py-8"
@@ -43,7 +33,7 @@ export default function Accommodation() {
                 alt="Pension Baranekhof v Kaprunu"
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent" />
               <div className="absolute right-5 bottom-5 left-5 text-white">
                 <h2 className="font-display text-2xl font-bold md:text-3xl">Pension Baranekhof</h2>
                 <p className="mt-1 flex items-center gap-1 text-xs text-slate-200 md:text-sm">
@@ -59,9 +49,6 @@ export default function Accommodation() {
             <div className="space-y-6 md:col-span-2">
               {/* Unified Info Card */}
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h3 className="font-display mb-4 text-lg font-bold text-slate-900">
-                  Důležité informace
-                </h3>
                 <div className="divide-y divide-slate-100">
                   {infoItems.map((item, idx) => (
                     <div
@@ -83,33 +70,13 @@ export default function Accommodation() {
                   ))}
                 </div>
               </div>
-
-              {/* Distances and Location detail */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h3 className="font-display mb-3.5 flex items-center gap-2 text-lg font-bold text-slate-900">
-                  <Compass className="h-5 w-5 text-emerald-600" /> Vzdálenosti & Dostupnost
-                </h3>
-                <div className="divide-y divide-slate-100">
-                  {distances.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between py-2.5 text-sm"
-                    >
-                      <span className="text-slate-600">{item.target}</span>
-                      <span className="font-bold text-slate-900">{item.dist}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* Right Column: Address and links */}
             <div className="space-y-6">
               {/* Action Links & Location Map */}
               <div className="flex flex-col gap-2.5 rounded-2xl bg-slate-900 p-5 text-white shadow-sm">
-                <h4 className="font-display mb-1 text-base font-bold text-white">
-                  Rychlé odkazy
-                </h4>
+                <h4 className="font-display mb-1 text-base font-bold text-white">Rychlé odkazy</h4>
 
                 <a
                   href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
@@ -133,7 +100,7 @@ export default function Accommodation() {
                   href="https://baranekresorts.com/cs/dum/baranekhof"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-850 px-4 py-2.5 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-300"
+                  className="bg-slate-850 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-300"
                 >
                   <ExternalLink className="h-4 w-4" /> Oficiální Web (Česky)
                 </a>

@@ -1,4 +1,4 @@
-import { Compass, Home, Map, MapPin, Mountain, QrCode } from 'lucide-react';
+import { Home, Map, MapPin, Mountain, QrCode } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -22,10 +22,10 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
   };
 
   const navItems = [
-    { href: '/', label: 'Destinace', Icon: Compass },
+    { href: '/', label: 'Lokace', Icon: MapPin },
     // { href: '/hikes', label: 'Trasy Mapy.cz', Icon: Compass },
-    { href: '/card', label: 'SL karta', Icon: QrCode },
     { href: '/accommodation', label: 'Ubytování', Icon: Home },
+    { href: '/card', label: 'SL karta', Icon: QrCode },
     {
       href: '/map',
       label: 'Mapa',
@@ -37,30 +37,32 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
     <>
       {/* Top Brand Banner & Info */}
       <header
-        className="relative shrink-0 overflow-hidden border-b border-slate-800 bg-slate-900 px-4 py-6 text-white md:px-8"
+        className="relative shrink-0 overflow-hidden bg-slate-900 px-4 py-6 text-white md:px-8"
         id="header"
       >
         <div className="relative z-10 mx-auto max-w-4xl">
           <WeatherForecastWidget>
             <div className="min-w-0 flex-1">
-              <div className="mb-2 flex items-center gap-2">
-                <h1
-                  className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl"
-                  id="main_title"
-                >
-                  {title}
-                </h1>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
-                  <Mountain className="h-3.5 w-3.5" /> Zell am See &bull; Kaprun
-                </span>
-                {subtitle && (
-                  <p className="flex items-center gap-1.5 text-sm text-slate-400">
-                    <MapPin className="h-4 w-4 shrink-0 text-emerald-500" /> {subtitle}
-                  </p>
-                )}
-              </div>
+              <Link href="/">
+                <div className="mb-2 flex items-center gap-2">
+                  <h1
+                    className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl"
+                    id="main_title"
+                  >
+                    {title}
+                  </h1>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
+                    <Mountain className="h-3.5 w-3.5" /> Zell am See &bull; Kaprun
+                  </span>
+                  {subtitle && (
+                    <p className="flex items-center gap-1.5 text-sm text-slate-400">
+                      <MapPin className="h-4 w-4 shrink-0 text-emerald-500" /> {subtitle}
+                    </p>
+                  )}
+                </div>
+              </Link>
             </div>
           </WeatherForecastWidget>
         </div>
@@ -76,10 +78,10 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
             <Link
               key={href}
               href={href}
-              className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-all ${
                 isActive(href)
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
-                  : 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-emerald-300 bg-emerald-100 text-emerald-800 shadow-sm'
+                  : 'border-transparent bg-transparent hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               <Icon className={`h-4 w-4 text-emerald-600`} /> {label}

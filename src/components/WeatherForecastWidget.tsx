@@ -1,5 +1,7 @@
-import { Cloud, CloudRain, Droplets, RefreshCw, Sun } from 'lucide-react';
+import { Cloud, CloudRain, RefreshCw, Sun } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+
+import { cn } from '@/lib/utils';
 
 interface WeatherForecastWidgetProps {
   children: React.ReactNode;
@@ -73,7 +75,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
     fetchHourly();
   }, []);
 
-  const today = new Date('2026-07-03');
+  const today = new Date();
   const yearStr = today.getFullYear();
   const monthStr = String(today.getMonth() + 1).padStart(2, '0');
   const dayStr = String(today.getDate()).padStart(2, '0');
@@ -240,11 +242,11 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
           ) : activeWeather ? (
             <button
               onClick={() => setIsWeatherExpanded(!isWeatherExpanded)}
-              className={`group flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-700/50 bg-slate-800 px-3.5 py-2 text-sm font-medium transition-all hover:bg-slate-800 active:scale-95 ${
-                isWeatherExpanded
-                  ? 'border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
-                  : ''
-              }`}
+              className={cn(
+                'group flex cursor-pointer items-center gap-2.5 rounded-xl border border-transparent bg-slate-700/60 px-3.5 py-2 text-sm font-medium transition-all hover:bg-slate-800 active:scale-95',
+                isWeatherExpanded &&
+                  'border border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.15)]',
+              )}
               aria-expanded={isWeatherExpanded}
             >
               <div className="text-left">
@@ -279,14 +281,13 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
 
       {/* Expanded weekly forecast */}
       {isWeatherExpanded && (
-        <div className="w-full space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+        <div className="w-full space-y-4">
           {/* Weekly section */}
           <div>
             <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
               <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                Týdenní předpověď Kaprun (4.7. – 10.7.)
+                Týdenní předpověď Kaprun
               </span>
-              <span className="text-[10px] text-slate-500">Google Weather API</span>
             </div>
             <div className="flex scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950/10 gap-2.5 overflow-x-auto pt-0.5 pb-2">
               {displayWeather.map((w, idx) => {
@@ -295,10 +296,10 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                   <button
                     key={idx}
                     onClick={() => setSelectedDateKey(w.dateKey)}
-                    className={`flex min-w-[110px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
+                    className={`flex w-25 shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border py-2.5 text-center transition-all ${
                       isCurrent
-                        ? 'border-emerald-500 bg-emerald-950/20 text-white shadow-sm ring-1 ring-emerald-500/20'
-                        : 'border-slate-800 bg-slate-900/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/60'
+                        ? 'border-emerald-500 bg-slate-800 text-white shadow-sm'
+                        : 'border-slate-800 bg-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800/60'
                     }`}
                   >
                     <span
@@ -319,7 +320,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                     ) : (
                       <CloudRain className={`my-2 h-5 w-5 ${w.color}`} />
                     )}
-                    <div className="text-xs font-semibold">
+                    <div className="text-sm font-semibold">
                       {w.maxTemp ? (
                         <>
                           <span className="text-white">{w.maxTemp}</span>
@@ -331,12 +332,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                         <span className="text-slate-400">{w.temp}</span>
                       )}
                     </div>
-                    <div
-                      className="mt-1 max-w-full truncate text-[8px] text-slate-500"
-                      title={w.desc}
-                    >
-                      {w.desc}
-                    </div>
+                    <div className="mt-1 max-w-full truncate text-xs text-slate-400">{w.desc}</div>
                   </button>
                 );
               })}
@@ -363,11 +359,11 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                 <span className="text-xs text-slate-400">Načítám podrobná data...</span>
               </div>
             ) : hourlyForSelectedDay.length > 0 ? (
-              <div className="flex scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950/10 gap-2.5 overflow-x-auto pt-0.5 pb-2">
+              <div className="flex scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950/10 overflow-x-auto pt-0.5 pb-2">
                 {hourlyForSelectedDay.map((h, idx) => (
                   <div
                     key={idx}
-                    className="flex min-w-16 flex-col items-center justify-center rounded-xl border border-slate-800/50 bg-slate-900/30 p-2 text-center transition-all hover:bg-slate-900/60"
+                    className="flex min-w-13 flex-col items-center justify-center rounded-xl border-slate-800/50 p-2 pb-0 text-center transition-all"
                   >
                     <span className="text-xs font-semibold text-slate-400">{h.time}</span>
                     {h.iconUrl ? (
@@ -383,13 +379,13 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                     ) : (
                       <CloudRain className={`my-1 h-4 w-4 ${h.color}`} />
                     )}
-                    <span className="text-xs font-semibold text-white">{h.temp}</span>
+                    <span className="text-sm font-semibold text-white">{h.temp}</span>
                     {h.rainProb ? (
-                      <span className="mt-0.5 flex items-center gap-0.5 text-xs font-semibold text-sky-400">
-                        <Droplets className="h-2 w-2" /> {h.rainProb}
+                      <span className="mt-0.5 flex items-center gap-0.5 text-sm font-semibold text-sky-400">
+                        {h.rainProb}
                       </span>
                     ) : (
-                      <span className="mt-0.5 text-xs text-transparent select-none">-</span>
+                      <span className="mt-0.5 text-sm text-transparent select-none">-</span>
                     )}
                   </div>
                 ))}

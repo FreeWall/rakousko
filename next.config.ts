@@ -3,7 +3,7 @@ import { PHASE_PRODUCTION_BUILD } from 'next/constants';
 
 const nextConfig = (stage: string): NextConfig => ({
   distDir: stage == PHASE_PRODUCTION_BUILD ? 'build' : '.next',
-  output: stage == PHASE_PRODUCTION_BUILD ? 'export' : undefined,
+  output: 'export',
   productionBrowserSourceMaps: true,
   images: {
     unoptimized: true,

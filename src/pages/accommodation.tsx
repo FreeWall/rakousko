@@ -1,6 +1,8 @@
-import { ExternalLink, MapPin, Navigation } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import React from 'react';
+
+import { LinkButton } from '../components/LinkButton';
 
 export default function Accommodation() {
   const address = 'Kesselfallstraße 63, 5710 Kaprun';
@@ -75,35 +77,31 @@ export default function Accommodation() {
             {/* Right Column: Address and links */}
             <div className="space-y-6">
               {/* Action Links & Location Map */}
-              <div className="flex flex-col gap-2.5 rounded-2xl bg-slate-900 p-5 text-white shadow-sm">
-                <h4 className="font-display mb-1 text-base font-bold text-white">Rychlé odkazy</h4>
+              <div className="flex flex-col gap-2.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h4 className="font-display mb-1 text-base font-bold text-slate-900">
+                  Rychlé odkazy
+                </h4>
 
-                <a
+                <LinkButton
+                  variant="mapycz"
                   href="https://mapy.com/cs/turisticka?source=osm&id=1072899509"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
                 >
-                  <Navigation className="h-4 w-4" /> Baranekhof na Mapy.cz
-                </a>
+                  Otevřít v Mapy.cz
+                </LinkButton>
 
-                <a
+                <LinkButton
+                  variant="googlemaps"
                   href="https://www.google.com/maps/search/?api=1&query=Pension+Baranekhof+Kaprun+Austria"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
                 >
-                  <MapPin className="h-4 w-4" /> Baranekhof na Google Maps
-                </a>
+                  Otevřít v Google Maps
+                </LinkButton>
 
-                <a
+                <LinkButton
+                  variant="external"
                   href="https://baranekresorts.com/cs/dum/baranekhof"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-slate-850 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-300"
                 >
-                  <ExternalLink className="h-4 w-4" /> Oficiální Web (Česky)
-                </a>
+                  Oficiální web
+                </LinkButton>
               </div>
             </div>
           </div>

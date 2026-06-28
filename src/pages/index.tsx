@@ -2,15 +2,14 @@ import {
   ChevronDown,
   ChevronRight,
   CreditCard,
-  ExternalLink,
   Info,
   MapPin,
   Mountain,
-  Navigation,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import React, { useState } from 'react';
 
+import { LinkButton } from '@/components/LinkButton';
 import { destinations } from '@/lib/destinations';
 
 export default function Home() {
@@ -185,30 +184,29 @@ export default function Home() {
                             </div>
 
                             {/* Custom Note Box & Links */}
-                            <div className="space-y-3 pt-2">
+                            <div className="pt-2">
                               {/* Links */}
                               {(dest.mapyUrl || dest.webUrl) && (
-                                <div className="flex gap-2">
-                                  {dest.mapyUrl && (
-                                    <a
-                                      href={dest.mapyUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm transition-colors hover:bg-emerald-50"
-                                    >
-                                      <Navigation className="h-3.5 w-3.5" /> Trasa na Mapy.cz
-                                    </a>
-                                  )}
+                                <div className="flex justify-end gap-3 pt-3 text-sm">
                                   {dest.webUrl && (
-                                    <a
+                                    <LinkButton
+                                      variant="external"
                                       href={dest.webUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-200"
                                     >
-                                      <ExternalLink className="h-3.5 w-3.5 text-slate-500" />{' '}
                                       Oficiální web
-                                    </a>
+                                    </LinkButton>
+                                  )}
+                                  <LinkButton
+                                    variant="googlemaps"
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dest.name)}`}
+                                    type="icon"
+                                  ></LinkButton>
+                                  {dest.mapyUrl && (
+                                    <LinkButton
+                                      variant="mapycz"
+                                      href={dest.mapyUrl}
+                                      type="icon"
+                                    ></LinkButton>
                                   )}
                                 </div>
                               )}

@@ -1,7 +1,6 @@
 import {
   ChevronDown,
   ChevronRight,
-  Compass,
   CreditCard,
   ExternalLink,
   Info,
@@ -13,7 +12,6 @@ import { motion } from 'motion/react';
 import React, { useState } from 'react';
 
 import Header from '@/components/Header';
-import WeatherForecast from '@/components/WeatherForecast';
 import { destinations } from '@/lib/destinations';
 
 export default function Home() {
@@ -37,15 +35,8 @@ export default function Home() {
           transition={{ duration: 0.2 }}
           className="flex flex-col gap-6"
         >
-          {/* Weather Forecast Panel */}
-          <WeatherForecast />
-
           {/* Destinations List Section */}
           <div className="space-y-4">
-            <h3 className="font-display flex items-center gap-2 text-xl font-bold text-slate-900">
-              <Compass className="h-5 w-5 text-emerald-600" /> Seznam destinací & plánovaných cílů
-            </h3>
-
             <div className="space-y-3">
               {destinations.map((dest) => {
                 const isExpanded = expandedDay === dest.id;
@@ -73,9 +64,6 @@ export default function Home() {
                           )}
                         </div>
                         <div>
-                          <div className="font-mono text-[10px] font-semibold tracking-wider text-emerald-600 uppercase">
-                            {dest.type}
-                          </div>
                           <h4 className="text-base leading-snug font-bold text-slate-900">
                             {dest.name}
                           </h4>
@@ -239,8 +227,6 @@ export default function Home() {
               })}
             </div>
           </div>
-
-
         </motion.div>
       </main>
 

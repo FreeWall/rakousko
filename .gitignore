@@ -4,6 +4,8 @@
 # next.js
 /_next
 /.next
+/.next-dev
+/.next-build
 /build
 next-env.d.ts
 /.swc

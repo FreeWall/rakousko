@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   Award,
   Calendar,
   ChevronDown,
@@ -10,7 +9,6 @@ import {
   Compass,
   CreditCard,
   ExternalLink,
-  Flame,
   Info,
   Map,
   MapPin,
@@ -43,10 +41,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'hikes' | 'card'>('overview');
 
-  // Time States
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [isVacationOver, setIsVacationOver] = useState(false);
-  const [isVacationActive, setIsVacationActive] = useState(false);
+
 
   // Group / Splitter States
   const [participants, setParticipants] = useState<Participant[]>([
@@ -61,8 +56,7 @@ export default function Home() {
   const [newExpensePayer, setNewExpensePayer] = useState('1');
   const [newExpenseShared, setNewExpenseShared] = useState<string[]>(['1', '2', '3', '4']);
 
-  // Itinerary Notes
-  const [itineraryNotes, setItineraryNotes] = useState<Record<string, string>>({});
+
 
   // SalzburgerLand Card Interactive Simulator
   const [selectedAttractions, setSelectedAttractions] = useState<string[]>([
@@ -179,43 +173,13 @@ export default function Home() {
         const savedExpenses = localStorage.getItem('kaprun_expenses');
         if (savedExpenses) setExpenses(JSON.parse(savedExpenses));
 
-        const savedNotes = localStorage.getItem('kaprun_notes');
-        if (savedNotes) setItineraryNotes(JSON.parse(savedNotes));
+
       } catch (err) {
         console.error('Error loading localStorage data:', err);
       }
     });
 
-    // Countdown calc
-    const targetDate = new Date('2026-07-04T08:00:00').getTime();
-    const endDate = new Date('2026-07-10T18:00:00').getTime();
-
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const diffStart = targetDate - now;
-      const diffEnd = endDate - now;
-
-      if (diffEnd < 0) {
-        setIsVacationOver(true);
-        setIsVacationActive(false);
-      } else if (diffStart < 0) {
-        setIsVacationActive(true);
-        setIsVacationOver(false);
-      } else {
-        setIsVacationActive(false);
-        setIsVacationOver(false);
-
-        const d = Math.floor(diffStart / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diffStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diffStart % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diffStart % (1000 * 60)) / 1000);
-
-        setTimeLeft({ days: d, hours: h, minutes: m, seconds: s });
-      }
-    }, 1000);
-
     return () => {
-      clearInterval(interval);
       cancelAnimationFrame(mountHandle);
     };
   }, []);
@@ -231,10 +195,7 @@ export default function Home() {
     localStorage.setItem('kaprun_expenses', JSON.stringify(expenses));
   }, [expenses, mounted]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    localStorage.setItem('kaprun_notes', JSON.stringify(itineraryNotes));
-  }, [itineraryNotes, mounted]);
+
 
 
 
@@ -394,13 +355,7 @@ export default function Home() {
     );
   };
 
-  // Edit Itinerary Notes
-  const handleSaveItineraryNote = (key: string, value: string) => {
-    setItineraryNotes({
-      ...itineraryNotes,
-      [key]: value,
-    });
-  };
+
 
 
 
@@ -517,45 +472,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Countdown timer */}
-          <div className="flex min-w-[240px] items-center gap-3 self-start rounded-xl border border-slate-700/50 bg-slate-800/80 p-3.5 backdrop-blur md:self-auto">
-            <Clock className="h-5 w-5 shrink-0 animate-pulse text-emerald-400" />
-            <div className="flex-1">
-              {isVacationOver ? (
-                <div className="font-mono text-xs text-slate-400">
-                  Dovolená úspěšně skončila! 🎉
-                </div>
-              ) : isVacationActive ? (
-                <div className="flex items-center gap-1 font-mono text-xs font-bold text-emerald-400">
-                  <Flame className="h-4 w-4 shrink-0 text-amber-500" /> DOVOLENÁ PRÁVĚ PROBÍHÁ! 🥾
-                </div>
-              ) : (
-                <div>
-                  <div className="mb-1 font-mono text-[10px] tracking-wider text-slate-400 uppercase">
-                    Odjezd do Kaprunu za:
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-center font-mono text-white">
-                    <div>
-                      <span className="block text-sm font-bold">{timeLeft.days}</span>
-                      <span className="text-[9px] text-slate-500">dní</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold">{timeLeft.hours}</span>
-                      <span className="text-[9px] text-slate-500">hod</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold">{timeLeft.minutes}</span>
-                      <span className="text-[9px] text-slate-500">min</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold">{timeLeft.seconds}</span>
-                      <span className="text-[9px] text-slate-500">sek</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+
         </div>
       </header>
 
@@ -640,10 +557,7 @@ export default function Home() {
                       <RefreshCw className="h-3 w-3 animate-spin" /> Načítám online...
                     </span>
                   ) : weatherForecast.length > 0 ? (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-100/50 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />{' '}
-                      Live Online
-                    </span>
+                    null
                   ) : (
                     <span className="text-xs text-slate-400">Typické alpské klima</span>
                   )}
@@ -678,24 +592,11 @@ export default function Home() {
                           <CloudRain className={`my-2 h-6 w-6 ${w.color}`} />
                         )}
                         <span className="text-sm font-bold text-slate-800">{w.temp}</span>
-                        <span
-                          className="text-slate-450 mt-0.5 line-clamp-1 text-[10px]"
-                          title={w.desc}
-                        >
-                          {w.desc}
-                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-                <p className="mt-3 flex items-start gap-1 text-xs text-slate-500">
-                  <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
-                  <span>
-                    V Alpách platí pravidlo: vyrazit na túru brzy ráno! Po obědě se v červenci často
-                    tvoří bouřky a mlha. V případě deště využijte Tauern Spa (vnitřní areál) nebo
-                    Kaprunské muzeum v centru obce.
-                  </span>
-                </p>
+
               </div>
 
               {/* Destinations List Section */}
@@ -708,7 +609,6 @@ export default function Home() {
                 <div className="space-y-3">
                   {destinations.map((dest) => {
                     const isExpanded = expandedDay === dest.id;
-                    const noteValue = itineraryNotes[dest.noteKey] || '';
 
                     return (
                       <div
@@ -758,9 +658,6 @@ export default function Home() {
                               <div className="flex flex-col justify-between space-y-4">
                                 <div className="space-y-3">
                                   <div>
-                                    <span className="mb-1 block font-mono text-[11px] tracking-wider text-slate-400 uppercase">
-                                      O místě
-                                    </span>
                                     <p className="text-sm leading-relaxed text-slate-600">
                                       {dest.description}
                                     </p>
@@ -895,20 +792,7 @@ export default function Home() {
                                     </div>
                                   )}
 
-                                  <div className="space-y-1.5">
-                                    <label className="block font-mono text-[11px] tracking-wider text-slate-400 uppercase">
-                                      Moje poznámky / plán pro toto místo:
-                                    </label>
-                                    <textarea
-                                      value={noteValue}
-                                      onChange={(e) =>
-                                        handleSaveItineraryNote(dest.noteKey, e.target.value)
-                                      }
-                                      placeholder="Zapište si kdy sem chcete jít, co nakoupit, rezervace..."
-                                      className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-slate-700 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
-                                      rows={2}
-                                    />
-                                  </div>
+
                                 </div>
                               </div>
                             </div>
@@ -1377,32 +1261,7 @@ export default function Home() {
 
         </AnimatePresence>
 
-        {/* Persistent Emergency Quick Reference / Help */}
-        <div
-          className="shrink-0 space-y-3 rounded-2xl bg-slate-900 p-5 text-slate-100 shadow-sm"
-          id="emergency_ref"
-        >
-          <div className="flex items-center gap-2 text-sm font-bold tracking-wider text-rose-400 uppercase">
-            <AlertTriangle className="h-4 w-4" /> Nouzové kontakty & Rychlý tahák
-          </div>
-          <div className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-3">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <span className="mb-1 block text-slate-400">Horská služba Rakousko:</span>
-              <span className="block text-sm font-bold text-white">📞 140</span>
-              <span className="text-[10px] text-slate-400">Evropská pohotovost: 112</span>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <span className="mb-1 block text-slate-400">Sídlo ubytování:</span>
-              <span className="block text-sm font-bold text-white">Pension Baranekhof</span>
-              <span className="text-[10px] text-slate-400">Spatlahnerweg 13, Kaprun</span>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <span className="mb-1 block text-slate-400">Místní lékárna:</span>
-              <span className="block text-sm font-bold text-white">Apotheke Kaprun</span>
-              <span className="text-[10px] text-slate-400">Sigmund-Thun-Straße 22</span>
-            </div>
-          </div>
-        </div>
+
       </main>
 
       {/* Humble craft footer */}

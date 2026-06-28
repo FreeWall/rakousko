@@ -1,6 +1,0 @@
-{
-  "name": "Turistický průvodce Kaprun",
-  "description": "Interaktivní tahák a pomocník pro turistickou dovolenou v Kaprunu (Rakousko) pro 4 dospělé.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

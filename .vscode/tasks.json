@@ -4,55 +4,12 @@
     {
       "type": "shell",
       "label": "Spustit lokální server",
-      "dependsOn": ["Lokální server"],
-      "dependsOrder": "sequence",
-      "command": "start http://localhost:3000",
-      "linux": {
-        "command": "xdg-open http://localhost:3000"
-      },
-      "windows": {
-        "command": "start http://localhost:3000"
-      },
-      "osx": {
-        "command": "open http://localhost:3000"
-      },
+      "detail": "yarn dev",
       "problemMatcher": [],
-      "detail": "Spustí server a otevře prohlížeč",
+      "command": "yarn dev",
       "icon": {
         "id": "run",
         "color": "terminal.ansiCyan"
-      },
-      "group": {
-        "kind": "test",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "close": true
-      }
-    },
-    {
-      "type": "shell",
-      "label": "Lokální server",
-      "command": "yarn dev",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "nextjs",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^.*Starting...$",
-          "endsPattern": "^.*Ready in.*$"
-        },
-        "pattern": {
-          "regexp": "^.*Ready in (\\d+)ms$",
-          "message": 0
-        }
-      },
-      "hide": true,
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
       }
     }
   ]

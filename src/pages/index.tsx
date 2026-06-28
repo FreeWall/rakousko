@@ -64,7 +64,7 @@ export default function Home() {
                           )}
                         </div>
                         <div>
-                          <h4 className="text-base leading-snug font-bold text-slate-900">
+                          <h4 className="text-sm leading-snug font-semibold text-slate-900">
                             {dest.name}
                           </h4>
                         </div>

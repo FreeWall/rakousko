@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-import Header from '@/components/Header';
 
 // Load MapWidget with SSR disabled because Leaflet requires the browser 'window' object
 const MapWidget = dynamic(() => import('@/components/MapWidget'), {
@@ -18,11 +17,10 @@ const MapWidget = dynamic(() => import('@/components/MapWidget'), {
 
 export default function MapPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-800 selection:bg-emerald-200 selection:text-emerald-900">
-      <Header />
+    <>
 
       {/* Map Content */}
       <MapWidget />
-    </div>
+    </>
   );
 }

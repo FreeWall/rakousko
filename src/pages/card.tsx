@@ -2,7 +2,6 @@ import { CreditCard, Info } from 'lucide-react';
 import { motion } from 'motion/react';
 import React, { useState } from 'react';
 
-import Header from '@/components/Header';
 
 export default function CardSimulator() {
   const [selectedAttractions, setSelectedAttractions] = useState<string[]>([]);
@@ -87,11 +86,7 @@ export default function CardSimulator() {
   const savingsStats = calculateCardSavings();
 
   return (
-    <div
-      className="flex min-h-screen flex-col bg-slate-50 text-slate-800 selection:bg-emerald-200 selection:text-emerald-900"
-      id="main_container"
-    >
-      <Header />
+    <>
 
       {/* Main Responsive Area */}
       <main
@@ -276,6 +271,6 @@ export default function CardSimulator() {
         Aktivní Dovolená Kaprun &bull; 4.7.2026 - 10.7.2026 &bull; Pension Baranekhof &bull;
         Vyrobeno s láskou k horám 🏔️
       </footer>
-    </div>
+    </>
   );
 }

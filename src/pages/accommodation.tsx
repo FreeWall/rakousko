@@ -2,7 +2,6 @@ import { Compass, ExternalLink, MapPin, Navigation } from 'lucide-react';
 import { motion } from 'motion/react';
 import React from 'react';
 
-import Header from '@/components/Header';
 
 export default function Accommodation() {
   const address = 'Kesselfallstraße 63, 5710 Kaprun';
@@ -23,11 +22,7 @@ export default function Accommodation() {
   ];
 
   return (
-    <div
-      className="flex min-h-screen flex-col bg-slate-50 text-slate-800 selection:bg-emerald-200 selection:text-emerald-900"
-      id="main_container"
-    >
-      <Header />
+    <>
 
       {/* Main Responsive Area */}
       <main
@@ -156,6 +151,6 @@ export default function Accommodation() {
         Aktivní Dovolená Kaprun &bull; 4.7.2026 - 10.7.2026 &bull; Pension Baranekhof &bull;
         Vyrobeno s láskou k horám 🏔️
       </footer>
-    </div>
+    </>
   );
 }

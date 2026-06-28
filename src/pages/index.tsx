@@ -11,18 +11,13 @@ import {
 import { motion } from 'motion/react';
 import React, { useState } from 'react';
 
-import Header from '@/components/Header';
 import { destinations } from '@/lib/destinations';
 
 export default function Home() {
   const [expandedDay, setExpandedDay] = useState<string | null>('kitzsteinhorn');
 
   return (
-    <div
-      className="flex min-h-screen flex-col bg-slate-50 text-slate-800 selection:bg-emerald-200 selection:text-emerald-900"
-      id="main_container"
-    >
-      <Header />
+    <>
 
       {/* Main Responsive Area */}
       <main
@@ -238,6 +233,6 @@ export default function Home() {
         Aktivní Dovolená Kaprun &bull; 4.7.2026 - 10.7.2026 &bull; Pension Baranekhof &bull;
         Vyrobeno s láskou k horám 🏔️
       </footer>
-    </div>
+    </>
   );
 }

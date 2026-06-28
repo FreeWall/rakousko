@@ -23,7 +23,7 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
 
   const navItems = [
     { href: '/', label: 'Destinace', Icon: Compass },
-    { href: '/hikes', label: 'Trasy Mapy.cz', Icon: Compass },
+    // { href: '/hikes', label: 'Trasy Mapy.cz', Icon: Compass },
     { href: '/card', label: 'SL karta', Icon: QrCode },
     { href: '/accommodation', label: 'Ubytování', Icon: Home },
     {
@@ -40,7 +40,6 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
         className="relative shrink-0 overflow-hidden border-b border-slate-800 bg-slate-900 px-4 py-6 text-white md:px-8"
         id="header"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-950/40 via-slate-900 to-slate-900" />
         <div className="relative z-10 mx-auto max-w-4xl">
           <WeatherForecastWidget>
             <div className="min-w-0 flex-1">
@@ -72,7 +71,7 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
         className="sticky top-0 z-40 flex shrink-0 scrollbar-none justify-start overflow-x-auto border-b border-slate-200 bg-white px-2 py-2.5 md:justify-center md:px-8"
         id="navigation_bar"
       >
-        <div className="flex w-full max-w-4xl gap-1.5">
+        <div className="flex w-full max-w-4xl">
           {navItems.map(({ href, label, Icon }) => (
             <Link
               key={href}

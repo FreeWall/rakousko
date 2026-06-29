@@ -1,4 +1,5 @@
 import { Cloud, CloudRain, RefreshCw, Sun } from 'lucide-react';
+import { AnimatePresence, cubicBezier, motion } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -226,7 +227,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
     : '';
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col">
       <div className="flex flex-row items-center justify-between gap-4">
         {children}
 
@@ -243,7 +244,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
             <button
               onClick={() => setIsWeatherExpanded(!isWeatherExpanded)}
               className={cn(
-                'group flex cursor-pointer items-center gap-2.5 rounded-xl border border-transparent bg-slate-700/60 px-3.5 py-2 text-sm font-medium transition-all hover:bg-slate-800 active:scale-95',
+                'group flex cursor-pointer items-center gap-2.5 rounded-xl border border-transparent bg-slate-700/60 px-3.5 py-2 text-sm font-medium transition-all hover:bg-slate-800',
                 isWeatherExpanded &&
                   'border border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.15)]',
               )}
@@ -280,126 +281,138 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
       </div>
 
       {/* Expanded weekly forecast */}
-      {isWeatherExpanded && (
-        <div className="w-full space-y-4">
-          {/* Weekly section */}
-          <div>
-            <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                Týdenní předpověď Kaprun
-              </span>
-            </div>
-            <div className="flex scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950/10 gap-2.5 overflow-x-auto pt-0.5 pb-2">
-              {displayWeather.map((w, idx) => {
-                const isCurrent = w.dateKey === currentSelectedKey;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedDateKey(w.dateKey)}
-                    className={`flex w-25 shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border py-2.5 text-center transition-all ${
-                      isCurrent
-                        ? 'border-emerald-500 bg-slate-800 text-white shadow-sm'
-                        : 'border-slate-800 bg-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <span
-                      className={`text-xs font-semibold ${isCurrent ? 'text-emerald-400' : 'text-slate-400'}`}
+      <AnimatePresence>
+        {isWeatherExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            exit={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            transition={{ duration: 0.3, ease: cubicBezier(0.16, 1, 0.3, 1) }}
+            className="w-full space-y-4 overflow-hidden"
+          >
+            {/* Weekly section */}
+            <div className="mt-6">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  Týdenní předpověď Kaprun
+                </span>
+              </div>
+              <div className="flex scrollbar-none gap-2.5 overflow-x-auto pt-0.5 pb-2">
+                {displayWeather.map((w, idx) => {
+                  const isCurrent = w.dateKey === currentSelectedKey;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedDateKey(w.dateKey)}
+                      className={`flex w-25 shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border py-2.5 text-center transition-all ${
+                        isCurrent
+                          ? 'border-emerald-500 bg-slate-800 text-white shadow-sm'
+                          : 'border-slate-800 bg-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800/60'
+                      }`}
                     >
-                      {w.day}
-                    </span>
-                    {w.iconUrl ? (
-                      <img
-                        src={w.iconUrl}
-                        alt={w.desc}
-                        className="my-1.5 h-8 w-8 object-contain"
-                      />
-                    ) : w.icon === 'Sun' ? (
-                      <Sun className={`my-2 h-5 w-5 ${w.color}`} />
-                    ) : w.icon === 'Cloud' ? (
-                      <Cloud className={`my-2 h-5 w-5 ${w.color}`} />
-                    ) : (
-                      <CloudRain className={`my-2 h-5 w-5 ${w.color}`} />
-                    )}
-                    <div className="text-sm font-semibold">
-                      {w.maxTemp ? (
-                        <>
-                          <span className="text-white">{w.maxTemp}</span>
-                          {w.minTemp && (
-                            <span className="font-medium text-slate-500"> / {w.minTemp}</span>
-                          )}
-                        </>
+                      <span
+                        className={`text-xs font-semibold ${isCurrent ? 'text-emerald-400' : 'text-slate-400'}`}
+                      >
+                        {w.day}
+                      </span>
+                      {w.iconUrl ? (
+                        <img
+                          src={w.iconUrl}
+                          alt={w.desc}
+                          className="my-1.5 h-8 w-8 object-contain"
+                        />
+                      ) : w.icon === 'Sun' ? (
+                        <Sun className={`my-2 h-5 w-5 ${w.color}`} />
+                      ) : w.icon === 'Cloud' ? (
+                        <Cloud className={`my-2 h-5 w-5 ${w.color}`} />
                       ) : (
-                        <span className="text-slate-400">{w.temp}</span>
+                        <CloudRain className={`my-2 h-5 w-5 ${w.color}`} />
+                      )}
+                      <div className="text-sm font-semibold">
+                        {w.maxTemp ? (
+                          <>
+                            <span className="text-white">{w.maxTemp}</span>
+                            {w.minTemp && (
+                              <span className="font-medium text-slate-500"> / {w.minTemp}</span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-slate-400">{w.temp}</span>
+                        )}
+                      </div>
+                      <div className="mt-1 max-w-full truncate text-xs text-slate-400">
+                        {w.desc}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Hourly section */}
+            <div className="">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  Hodinová předpověď:{' '}
+                  <span className="font-extrabold text-white">{selectedDayLabel}</span>
+                </span>
+                {isHourlyLoading && (
+                  <span className="flex items-center gap-1 text-[10px] text-slate-500">
+                    <RefreshCw className="h-3 w-3 animate-spin text-emerald-500" /> Načítám
+                    hodiny...
+                  </span>
+                )}
+              </div>
+
+              {isHourlyLoading ? (
+                <div className="flex h-20 items-center justify-center gap-2 rounded-xl bg-slate-900/30">
+                  <RefreshCw className="h-4 w-4 animate-spin text-emerald-500" />
+                  <span className="text-xs text-slate-400">Načítám podrobná data...</span>
+                </div>
+              ) : hourlyForSelectedDay.length > 0 ? (
+                <div className="flex scrollbar-none overflow-x-auto rounded-xl bg-slate-800 pt-0.5 pb-2">
+                  {hourlyForSelectedDay.map((h, idx) => (
+                    <div
+                      key={idx}
+                      className="flex min-w-13 flex-col items-center justify-center rounded-xl border-slate-800/50 p-2 pb-0 text-center transition-all"
+                    >
+                      <span className="text-xs font-semibold text-slate-400">{h.time}</span>
+                      {h.iconUrl ? (
+                        <img
+                          src={h.iconUrl}
+                          alt={h.desc}
+                          className="my-1 h-6 w-6 object-contain"
+                        />
+                      ) : h.icon === 'Sun' ? (
+                        <Sun className={`my-1 h-4 w-4 ${h.color}`} />
+                      ) : h.icon === 'Cloud' ? (
+                        <Cloud className={`my-1 h-4 w-4 ${h.color}`} />
+                      ) : (
+                        <CloudRain className={`my-1 h-4 w-4 ${h.color}`} />
+                      )}
+                      <span className="text-sm font-semibold text-white">{h.temp}</span>
+                      {h.rainProb ? (
+                        <span className="mt-0.5 flex items-center gap-0.5 text-sm font-semibold text-sky-400">
+                          {h.rainProb}
+                        </span>
+                      ) : (
+                        <span className="mt-0.5 text-sm text-transparent select-none">-</span>
                       )}
                     </div>
-                    <div className="mt-1 max-w-full truncate text-xs text-slate-400">{w.desc}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Hourly section */}
-          <div className="border-t border-slate-800/80 pt-3">
-            <div className="mb-2.5 flex items-center justify-between">
-              <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                Hodinová předpověď:{' '}
-                <span className="font-extrabold text-white">{selectedDayLabel}</span>
-              </span>
-              {isHourlyLoading && (
-                <span className="flex items-center gap-1 text-[10px] text-slate-500">
-                  <RefreshCw className="h-3 w-3 animate-spin text-emerald-500" /> Načítám hodiny...
-                </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex h-20 items-center justify-center rounded-xl border border-dashed border-slate-800 bg-slate-900/20 p-4 text-center">
+                  <span className="text-xs text-slate-500">
+                    Hodinová předpověď pro tento den již/ještě není k dispozici (limit API je 10
+                    dní).
+                  </span>
+                </div>
               )}
             </div>
-
-            {isHourlyLoading ? (
-              <div className="flex h-20 items-center justify-center gap-2 rounded-xl bg-slate-900/30">
-                <RefreshCw className="h-4 w-4 animate-spin text-emerald-500" />
-                <span className="text-xs text-slate-400">Načítám podrobná data...</span>
-              </div>
-            ) : hourlyForSelectedDay.length > 0 ? (
-              <div className="flex scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950/10 overflow-x-auto pt-0.5 pb-2">
-                {hourlyForSelectedDay.map((h, idx) => (
-                  <div
-                    key={idx}
-                    className="flex min-w-13 flex-col items-center justify-center rounded-xl border-slate-800/50 p-2 pb-0 text-center transition-all"
-                  >
-                    <span className="text-xs font-semibold text-slate-400">{h.time}</span>
-                    {h.iconUrl ? (
-                      <img
-                        src={h.iconUrl}
-                        alt={h.desc}
-                        className="my-1 h-6 w-6 object-contain"
-                      />
-                    ) : h.icon === 'Sun' ? (
-                      <Sun className={`my-1 h-4 w-4 ${h.color}`} />
-                    ) : h.icon === 'Cloud' ? (
-                      <Cloud className={`my-1 h-4 w-4 ${h.color}`} />
-                    ) : (
-                      <CloudRain className={`my-1 h-4 w-4 ${h.color}`} />
-                    )}
-                    <span className="text-sm font-semibold text-white">{h.temp}</span>
-                    {h.rainProb ? (
-                      <span className="mt-0.5 flex items-center gap-0.5 text-sm font-semibold text-sky-400">
-                        {h.rainProb}
-                      </span>
-                    ) : (
-                      <span className="mt-0.5 text-sm text-transparent select-none">-</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex h-20 items-center justify-center rounded-xl border border-dashed border-slate-800 bg-slate-900/20 p-4 text-center">
-                <span className="text-xs text-slate-500">
-                  Hodinová předpověď pro tento den již/ještě není k dispozici (limit API je 10 dní).
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

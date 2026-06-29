@@ -15,4 +15,5 @@ body {
   color: var(--color-text);
   line-height: 1.6;
   overflow-y: scroll;
+  letter-spacing: -0.025em;
 }

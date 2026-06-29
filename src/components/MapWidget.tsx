@@ -1,21 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
+
 import 'leaflet/dist/leaflet.css';
-import { destinations, Destination } from '@/lib/destinations';
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Navigation, 
-  ExternalLink,
-  Compass,
-  Home,
-  CheckCircle2,
-  Info
-} from 'lucide-react';
-import Link from 'next/link';
+import { Compass, ExternalLink, Home, MapPin, Navigation } from 'lucide-react';
+
+import { destinations } from '@/lib/destinations';
 
 // Approximate coordinates for Baranekhof Pension
-const PENSION_COORDS: [number, number] = [47.2369, 12.7230];
+const PENSION_COORDS: [number, number] = [47.2369, 12.723];
 
 // Destination list helper with coordinates added
 const allPoints = [
@@ -25,12 +17,12 @@ const allPoints = [
     type: 'Ubytování',
     description: 'Náš hlavní stan pro celou dovolenou.',
     coords: PENSION_COORDS,
-    isHome: true
+    isHome: true,
   },
-  ...destinations.map(d => ({
+  ...destinations.map((d) => ({
     ...d,
-    isHome: false
-  }))
+    isHome: false,
+  })),
 ];
 
 export default function MapWidget() {
@@ -44,9 +36,9 @@ export default function MapWidget() {
 
     // Initialize Map
     const map = L.map('map-container', {
-      center: [47.25, 12.70],
+      center: [47.25, 12.7],
       zoom: 12,
-      zoomControl: false // We will position it custom
+      zoomControl: false, // We will position it custom
     });
 
     mapRef.current = map;
@@ -57,27 +49,28 @@ export default function MapWidget() {
     const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       maxZoom: 20,
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google Maps'
+      attribution: '&copy; Google Maps',
     });
 
     const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
       maxZoom: 20,
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; Google Maps'
+      attribution: '&copy; Google Maps',
     });
 
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution:
+        '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     });
 
     // Default layer
     googleStreets.addTo(map);
 
     const baseMaps = {
-      "Google Mapa": googleStreets,
-      "Google Satelitní": googleHybrid,
-      "OpenStreetMap": osm
+      'Google Mapa': googleStreets,
+      'Google Satelitní': googleHybrid,
+      OpenStreetMap: osm,
     };
 
     L.control.layers(baseMaps, undefined, { position: 'topright' }).addTo(map);
@@ -89,7 +82,7 @@ export default function MapWidget() {
       const isHome = point.isHome;
       let colorClass = 'bg-emerald-500';
       let pingColorClass = 'bg-emerald-400';
-      
+
       if (isHome) {
         colorClass = 'bg-rose-500';
         pingColorClass = 'bg-rose-400';
@@ -119,7 +112,7 @@ export default function MapWidget() {
         `,
         className: 'custom-map-marker',
         iconSize: [32, 32],
-        iconAnchor: [16, 16]
+        iconAnchor: [16, 16],
       });
 
       const marker = L.marker(point.coords as [number, number], { icon: customIcon })
@@ -154,11 +147,11 @@ export default function MapWidget() {
   }, []);
 
   // Handle select destination from sidebar
-  const handleSelectPoint = (point: typeof allPoints[0]) => {
+  const handleSelectPoint = (point: (typeof allPoints)[0]) => {
     setSelectedDestId(point.id);
     if (mapRef.current && point.coords) {
       mapRef.current.flyTo(point.coords as [number, number], 14, { duration: 1.5 });
-      
+
       // Open popup with slight delay to let flyTo finish
       setTimeout(() => {
         const marker = markersRef.current[point.id];
@@ -169,66 +162,66 @@ export default function MapWidget() {
     }
   };
 
-  const selectedPoint = allPoints.find(p => p.id === selectedDestId);
+  const selectedPoint = allPoints.find((p) => p.id === selectedDestId);
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-64px)] w-full overflow-hidden bg-slate-50 font-sans">
+    <div className="flex h-[calc(100vh-64px)] w-full flex-col overflow-hidden bg-slate-50 font-sans md:flex-row">
       {/* Sidebar - Destinations List */}
-      <div className="w-full md:w-96 flex flex-col border-r border-slate-200 bg-white shadow-md z-10 shrink-0 h-1/2 md:h-full">
+      <div className="z-10 flex h-1/2 w-full shrink-0 flex-col border-r border-slate-200 bg-white shadow-md md:h-full md:w-96">
         {/* Header */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 p-4">
           <div className="flex items-center gap-2">
-            <Compass className="w-5 h-5 text-emerald-600 animate-spin-slow" />
-            <h2 className="font-bold text-slate-800 tracking-tight">Destinace a trasy</h2>
+            <Compass className="animate-spin-slow h-5 w-5 text-emerald-600" />
+            <h2 className="font-bold text-slate-800">Destinace a trasy</h2>
           </div>
-          <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full">
+          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
             {allPoints.length} míst
           </span>
         </div>
 
         {/* List */}
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-100 p-2 space-y-1">
+        <div className="flex-1 space-y-1 divide-y divide-slate-100 overflow-y-auto p-2">
           {allPoints.map((point) => {
             const isSelected = point.id === selectedDestId;
             return (
               <button
                 key={point.id}
                 onClick={() => handleSelectPoint(point)}
-                className={`group w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 border ${
-                  isSelected 
-                    ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950 shadow-sm' 
-                    : 'border-transparent hover:bg-slate-50 text-slate-700'
+                className={`group flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-all ${
+                  isSelected
+                    ? 'border-emerald-200 bg-emerald-50/70 text-emerald-950 shadow-sm'
+                    : 'border-transparent text-slate-700 hover:bg-slate-50'
                 }`}
               >
-                <div className="relative mt-0.5 shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
+                <div className="relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
                   {point.isHome ? (
-                    <Home className="w-5 h-5 text-rose-500" />
+                    <Home className="h-5 w-5 text-rose-500" />
                   ) : (point as any).imageUrl ? (
                     <img
                       src={(point as any).imageUrl}
                       alt={point.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
-                    <MapPin className="w-5 h-5 text-emerald-600" />
+                    <MapPin className="h-5 w-5 text-emerald-600" />
                   )}
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold block truncate">
+
+                <div className="min-w-0 flex-1">
+                  <div className="mb-0.5 flex items-center justify-between gap-1">
+                    <span className="block truncate font-mono text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                       {point.type || 'Místo'}
                     </span>
                     {!point.isHome && (point as any).slCardInfo && (
-                      <span className="text-[9px] bg-blue-50 text-blue-700 font-bold px-1 py-0.2 rounded border border-blue-100 shrink-0">
+                      <span className="py-0.2 shrink-0 rounded border border-blue-100 bg-blue-50 px-1 text-[9px] font-bold text-blue-700">
                         SL Card
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-xs text-slate-800 leading-snug truncate">
+                  <h3 className="truncate text-xs leading-snug font-semibold text-slate-800">
                     {point.name}
                   </h3>
-                  <p className="text-[11px] text-slate-500 leading-normal line-clamp-1 mt-0.5">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] leading-normal text-slate-500">
                     {point.description}
                   </p>
                 </div>
@@ -239,25 +232,25 @@ export default function MapWidget() {
 
         {/* Detail preview pane inside sidebar */}
         {selectedPoint && (
-          <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-            <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm space-y-3">
+          <div className="border-t border-slate-100 bg-slate-50/50 p-4">
+            <div className="space-y-3 rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-sm">
               {!(selectedPoint as any).isHome && (selectedPoint as any).imageUrl && (
-                <div className="relative h-28 w-full rounded-lg overflow-hidden border border-slate-100 bg-slate-100">
+                <div className="relative h-28 w-full overflow-hidden rounded-lg border border-slate-100 bg-slate-100">
                   <img
                     src={(selectedPoint as any).imageUrl}
                     alt={selectedPoint.name}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 </div>
               )}
               <div>
-                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold block mb-1">
+                <span className="mb-1 block font-mono text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                   {selectedPoint.type || 'Ubytování'}
                 </span>
-                <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                <h3 className="text-sm leading-snug font-bold text-slate-900">
                   {selectedPoint.name}
                 </h3>
-                <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
                   {selectedPoint.description}
                 </p>
               </div>
@@ -267,18 +260,27 @@ export default function MapWidget() {
                   {/* Highlights */}
                   {(selectedPoint as any).highlights && (
                     <div className="space-y-1">
-                      <span className="text-[10px] uppercase font-mono text-slate-400 block font-bold">Hlavní highlights:</span>
-                      <ul className="text-[11px] text-slate-600 space-y-1 pl-2">
-                        {(selectedPoint as any).highlights.slice(0, 2).map((h: string, i: number) => (
-                          <li key={i} className="list-disc leading-tight">{h}</li>
-                        ))}
+                      <span className="block font-mono text-[10px] font-bold text-slate-400 uppercase">
+                        Hlavní highlights:
+                      </span>
+                      <ul className="space-y-1 pl-2 text-[11px] text-slate-600">
+                        {(selectedPoint as any).highlights
+                          .slice(0, 2)
+                          .map((h: string, i: number) => (
+                            <li
+                              key={i}
+                              className="list-disc leading-tight"
+                            >
+                              {h}
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}
 
                   {/* Transport / dog details */}
                   {((selectedPoint as any).cableCarHours || (selectedPoint as any).dogPrice) && (
-                    <div className="bg-slate-50 border border-slate-200/60 rounded-lg p-2 text-[10px] text-slate-700 space-y-1">
+                    <div className="space-y-1 rounded-lg border border-slate-200/60 bg-slate-50 p-2 text-[10px] text-slate-700">
                       {(selectedPoint as any).cableCarHours && (
                         <div>
                           <strong>Provoz:</strong> {(selectedPoint as any).cableCarHours}
@@ -299,9 +301,9 @@ export default function MapWidget() {
                         href={(selectedPoint as any).mapyUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-white text-emerald-700 hover:bg-emerald-50 border border-slate-200 transition-colors justify-center shadow-xs"
+                        className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-bold text-emerald-700 shadow-xs transition-colors hover:bg-emerald-50"
                       >
-                        <Navigation className="w-3 h-3" /> Trasa
+                        <Navigation className="h-3 w-3" /> Trasa
                       </a>
                     )}
                     {(selectedPoint as any).webUrl && (
@@ -309,9 +311,9 @@ export default function MapWidget() {
                         href={(selectedPoint as any).webUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors justify-center border border-slate-200 shadow-xs"
+                        className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-[10px] font-bold text-slate-700 shadow-xs transition-colors hover:bg-slate-200"
                       >
-                        <ExternalLink className="w-3 h-3 text-slate-500" /> Web
+                        <ExternalLink className="h-3 w-3 text-slate-500" /> Web
                       </a>
                     )}
                   </div>
@@ -323,16 +325,19 @@ export default function MapWidget() {
       </div>
 
       {/* Map display */}
-      <div className="flex-1 relative h-1/2 md:h-full">
+      <div className="relative h-1/2 flex-1 md:h-full">
         {!isMapLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-20">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-100">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-xs text-slate-500 font-medium">Načítám mapové podklady...</span>
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"></div>
+              <span className="text-xs font-medium text-slate-500">Načítám mapové podklady...</span>
             </div>
           </div>
         )}
-        <div id="map-container" className="w-full h-full z-0" />
+        <div
+          id="map-container"
+          className="z-0 h-full w-full"
+        />
       </div>
     </div>
   );

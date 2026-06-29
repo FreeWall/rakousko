@@ -224,15 +224,6 @@ export default function Hikes() {
           </div>
         </motion.div>
       </main>
-
-      {/* Humble craft footer */}
-      <footer
-        className="shrink-0 border-t border-slate-200 bg-slate-100 px-4 py-4 text-center text-xs text-slate-500"
-        id="footer"
-      >
-        Aktivní Dovolená Kaprun &bull; 4.7.2026 - 10.7.2026 &bull; Pension Baranekhof &bull;
-        Vyrobeno s láskou k horám 🏔️
-      </footer>
     </>
   );
 }

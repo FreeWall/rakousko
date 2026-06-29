@@ -1,4 +1,4 @@
-import { Home, Map, MapPin, Mountain, QrCode } from 'lucide-react';
+import { Home, MapPin, Mountain, QrCode } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -26,11 +26,11 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
     // { href: '/hikes', label: 'Trasy Mapy.cz', Icon: Compass },
     { href: '/accommodation', label: 'Ubytování', Icon: Home },
     { href: '/card', label: 'SL karta', Icon: QrCode },
-    {
+    /* {
       href: '/map',
       label: 'Mapa',
       Icon: Map,
-    },
+    }, */
   ];
 
   return (
@@ -46,7 +46,7 @@ export default function Header({ title = 'Rakousko 2026', subtitle }: HeaderProp
               <Link href="/">
                 <div className="mb-2 flex items-center gap-2">
                   <h1
-                    className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl"
+                    className="font-display text-2xl font-bold text-white md:text-3xl"
                     id="main_title"
                   >
                     {title}

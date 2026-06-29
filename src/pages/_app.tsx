@@ -2,6 +2,7 @@ import { Agentation } from 'agentation';
 import { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
+import { useEffect } from 'react';
 
 import Layout from '@/components/Layout';
 import '@/styles/globals.css';
@@ -13,6 +14,15 @@ const inter = Inter({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
+        .catch((err) => console.error('Service Worker registration failed:', err));
+    }
+  }, []);
+
   return (
     <>
       <Head>
@@ -35,4 +45,5 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
 

@@ -6,7 +6,7 @@
     "dev": "yarn && concurrently -k -r \"next dev -p 3000\" \"agentation-mcp server\"",
     "mcp": "agentation-mcp server",
     "build": "next build && rm -rf build && mv .next-build build",
-    "start": "next start",
+    "start": "npx -y serve build",
     "export": "yarn build && touch ./build/.nojekyll",
     "deploy": "yarn install --frozen-lockfile && yarn export",
     "preinstall": "npx only-allow yarn"

@@ -1,80 +1,299 @@
-import { Cloud, CloudRain, RefreshCw, Sun } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ChevronDown, Cloud, CloudRain, MapPin, RefreshCw, Sun } from 'lucide-react';
 import { AnimatePresence, cubicBezier, motion } from 'motion/react';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
+import { destinations } from '@/lib/destinations';
 import { cn } from '@/lib/utils';
+
+const weatherLocations = [
+  {
+    name: 'Kaprun',
+    lat: '47.2721226',
+    lon: '12.7599268',
+  },
+  {
+    name: 'Pension Baranekhof',
+    lat: '47.2369',
+    lon: '12.723',
+  },
+  ...destinations
+    .filter((d) => d.coords)
+    .map((d) => ({
+      name: d.name,
+      lat: d.coords![0].toString(),
+      lon: d.coords![1].toString(),
+    })),
+];
+
+const API_KEY = 'AIzaSyDI6JLAqH6qrMk-PvRKrAC5cLxX3rDpquI';
+const CACHE_TIME = 15 * 60 * 1000;
+const GLOBAL_CACHE_KEY = 'weather_app_cache';
+
+interface CacheItem {
+  timestamp: number;
+  data: any;
+}
+
+function readGlobalCache(): Record<string, CacheItem> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(GLOBAL_CACHE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.error('Error reading global weather cache', e);
+    return {};
+  }
+}
+
+function writeGlobalCache(cache: Record<string, CacheItem>) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(GLOBAL_CACHE_KEY, JSON.stringify(cache));
+  } catch (e) {
+    console.error('Error writing global weather cache', e);
+  }
+}
+
+function getCachedData(key: string, cacheTime: number = CACHE_TIME) {
+  const cache = readGlobalCache();
+  const entry = cache[key];
+  if (entry && Date.now() - entry.timestamp < cacheTime) {
+    return entry.data;
+  }
+  return null;
+}
+
+function setCachedData(key: string, data: any) {
+  const cache = readGlobalCache();
+  const now = Date.now();
+  const cleanedCache: Record<string, CacheItem> = {};
+
+  // Clean up entries older than 24 hours to keep the cache size tiny
+  for (const [k, entry] of Object.entries(cache)) {
+    if (now - entry.timestamp < 24 * 60 * 60 * 1000) {
+      cleanedCache[k] = entry;
+    }
+  }
+
+  cleanedCache[key] = { timestamp: now, data };
+  writeGlobalCache(cleanedCache);
+}
+
+function minimizeDailyData(data: any) {
+  if (!data || !data.forecastDays) return data;
+  return {
+    forecastDays: data.forecastDays.map((dayData: any) => ({
+      time: dayData.interval?.startTime,
+      maxTemp: dayData.maxTemperature?.degrees,
+      minTemp: dayData.minTemperature?.degrees,
+      desc: dayData.daytimeForecast?.weatherCondition?.description?.text,
+      icon: dayData.daytimeForecast?.weatherCondition?.iconBaseUri,
+    })),
+  };
+}
+
+function minimizeHourlyData(data: any) {
+  if (!data || !data.forecastHours) return data;
+  return {
+    nextPageToken: data.nextPageToken,
+    forecastHours: data.forecastHours.map((hourData: any) => ({
+      y: hourData.displayDateTime?.year,
+      m: hourData.displayDateTime?.month,
+      d: hourData.displayDateTime?.day,
+      h: hourData.displayDateTime?.hours,
+      temp: hourData.temperature?.degrees,
+      desc: hourData.weatherCondition?.description?.text,
+      icon: hourData.weatherCondition?.iconBaseUri,
+      prec: hourData.precipitation?.probability?.percent,
+      wind: hourData.wind?.speed?.value,
+    })),
+  };
+}
+
+function minimizeCurrentData(data: any) {
+  if (!data || !data.temperature) return data;
+  return {
+    temp: data.temperature?.degrees,
+    desc: data.weatherCondition?.description?.text,
+    icon: data.weatherCondition?.iconBaseUri,
+    prec: data.precipitation?.probability?.percent,
+  };
+}
+
+async function fetchWithCache(url: string, cacheTime: number = CACHE_TIME) {
+  if (typeof window === 'undefined') {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.statusText}`);
+    let data = await res.json();
+    if (url.includes('days:lookup')) {
+      data = minimizeDailyData(data);
+    } else if (url.includes('hours:lookup')) {
+      data = minimizeHourlyData(data);
+    } else if (url.includes('currentConditions:lookup')) {
+      data = minimizeCurrentData(data);
+    }
+    return data;
+  }
+
+  const cached = getCachedData(url, cacheTime);
+  if (cached) return cached;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Fetch failed: ${res.statusText}`);
+  }
+  let data = await res.json();
+
+  if (url.includes('days:lookup')) {
+    data = minimizeDailyData(data);
+  } else if (url.includes('hours:lookup')) {
+    data = minimizeHourlyData(data);
+  } else if (url.includes('currentConditions:lookup')) {
+    data = minimizeCurrentData(data);
+  }
+
+  setCachedData(url, data);
+  return data;
+}
+
+async function fetchWeatherForecast(lat: string, lon: string) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || API_KEY;
+  const url = `https://weather.googleapis.com/v1/forecast/days:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&pageSize=10&units_system=METRIC&language_code=cs`;
+  const data = await fetchWithCache(url, 15 * 60 * 1000); // Denní předpověď 15 minut
+  if (data.forecastDays && data.forecastDays.length > 0) {
+    return data.forecastDays;
+  } else {
+    throw new Error('No weather data returned');
+  }
+}
+
+async function fetchWeatherHourly(lat: string, lon: string, targetDateKey: string) {
+  const today = new Date();
+  const yearStr = today.getFullYear();
+  const monthStr = String(today.getMonth() + 1).padStart(2, '0');
+  const dayStr = String(today.getDate()).padStart(2, '0');
+  const todayKey = `${yearStr}-${monthStr}-${dayStr}`;
+
+  const isToday = targetDateKey === todayKey;
+  const cacheTime = isToday ? 15 * 60 * 1000 : 60 * 60 * 1000; // 15 minut dnes, 1 hodina budoucí dny
+
+  const allHours: any[] = [];
+  let pageToken = '';
+  const maxPages = 10;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || API_KEY;
+
+  for (let i = 0; i < maxPages; i++) {
+    const url = `https://weather.googleapis.com/v1/forecast/hours:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&pageSize=24&units_system=METRIC&language_code=cs${pageToken ? `&pageToken=${pageToken}` : ''}`;
+    const data = await fetchWithCache(url, cacheTime);
+    if (!data.forecastHours || data.forecastHours.length === 0) {
+      break;
+    }
+
+    allHours.push(...data.forecastHours);
+
+    let hasPassedTarget = false;
+    for (const hourData of data.forecastHours) {
+      if (hourData?.y === undefined) continue;
+      const year = hourData.y;
+      const month = String(hourData.m).padStart(2, '0');
+      const day = String(hourData.d).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
+
+      if (dateKey > targetDateKey) {
+        hasPassedTarget = true;
+        break;
+      }
+    }
+
+    if (hasPassedTarget) {
+      break;
+    }
+
+    pageToken = data.nextPageToken;
+    if (!pageToken) break;
+  }
+
+  return allHours.filter((hourData: any) => {
+    if (hourData?.y === undefined) return false;
+    const year = hourData.y;
+    const month = String(hourData.m).padStart(2, '0');
+    const day = String(hourData.d).padStart(2, '0');
+    const dateKey = `${year}-${month}-${day}`;
+    return dateKey === targetDateKey;
+  });
+}
+
+async function fetchCurrentWeather(lat: string, lon: string) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || API_KEY;
+  const url = `https://weather.googleapis.com/v1/currentConditions:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&units_system=METRIC&language_code=cs`;
+  const data = await fetchWithCache(url, 10 * 60 * 1000); // 10 minut
+  return data;
+}
 
 interface WeatherForecastWidgetProps {
   children: React.ReactNode;
 }
 
 export default function WeatherForecastWidget({ children }: WeatherForecastWidgetProps) {
-  const [weatherForecast, setWeatherForecast] = useState<any[]>([]);
-  const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(true);
-  const [weatherError, setWeatherError] = useState<string | null>(null);
+  const router = useRouter();
+  const [selectedLocation, setSelectedLocation] = useState(weatherLocations[0]!);
+  const [isInitialMount, setIsInitialMount] = useState(true);
   const [isWeatherExpanded, setIsWeatherExpanded] = useState<boolean>(false);
-
-  // Hourly forecast states
-  const [hourlyForecast, setHourlyForecast] = useState<any[]>([]);
-  const [isHourlyLoading, setIsHourlyLoading] = useState<boolean>(true);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const lat = '47.2721226';
-    const lon = '12.7599268';
-    const apiKey = 'AIzaSyDI6JLAqH6qrMk-PvRKrAC5cLxX3rDpquI';
+    setIsWeatherExpanded(false);
+  }, [router.asPath]);
 
-    const fetchWeather = async () => {
-      try {
-        const url = `https://weather.googleapis.com/v1/forecast/days:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&pageSize=10&units_system=METRIC&language_code=cs`;
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error(`Failed to fetch weather data: ${res.statusText}`);
-        }
-        const data = await res.json();
-        if (data.forecastDays && data.forecastDays.length > 0) {
-          setWeatherForecast(data.forecastDays);
-        } else {
-          throw new Error('No weather data returned');
-        }
-      } catch (err: any) {
-        console.error('Error loading weather:', err);
-        setWeatherError(err.message || 'Nepodařilo se načíst počasí');
-      } finally {
-        setIsWeatherLoading(false);
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('selectedWeatherLocation');
+    if (saved) {
+      const found = weatherLocations.find((loc) => loc.name === saved);
+      if (found) {
+        setSelectedLocation(found);
       }
-    };
-
-    const fetchHourly = async () => {
-      try {
-        const allHours: any[] = [];
-        let pageToken = '';
-        const maxPages = 10;
-
-        for (let i = 0; i < maxPages; i++) {
-          const url = `https://weather.googleapis.com/v1/forecast/hours:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&pageSize=24&units_system=METRIC&language_code=cs${pageToken ? `&pageToken=${pageToken}` : ''}`;
-          const res = await fetch(url);
-          if (!res.ok) {
-            throw new Error(`Failed to fetch hourly weather: ${res.statusText}`);
-          }
-          const data = await res.json();
-          if (data.forecastHours) {
-            allHours.push(...data.forecastHours);
-          }
-          pageToken = data.nextPageToken;
-          if (!pageToken) break;
-        }
-        setHourlyForecast(allHours);
-      } catch (err) {
-        console.error('Error loading hourly weather:', err);
-      } finally {
-        setIsHourlyLoading(false);
-      }
-    };
-
-    fetchWeather();
-    fetchHourly();
+    }
+    setIsInitialMount(false);
   }, []);
+
+  // Save to localStorage when selectedLocation changes
+  useEffect(() => {
+    if (!isInitialMount) {
+      localStorage.setItem('selectedWeatherLocation', selectedLocation.name);
+    }
+  }, [selectedLocation, isInitialMount]);
+
+  const {
+    data: weatherForecast = [],
+    isLoading: isWeatherQueryLoading,
+    error: weatherErrorObj,
+  } = useQuery<any[]>({
+    queryKey: ['weather', selectedLocation.lat, selectedLocation.lon],
+    queryFn: () => fetchWeatherForecast(selectedLocation.lat, selectedLocation.lon),
+    enabled: !isInitialMount,
+  });
+
+  const {
+    data: currentWeather = null,
+    isLoading: isCurrentWeatherLoading,
+    error: currentWeatherErrorObj,
+  } = useQuery<any>({
+    queryKey: ['current-weather', selectedLocation.lat, selectedLocation.lon],
+    queryFn: () => fetchCurrentWeather(selectedLocation.lat, selectedLocation.lon),
+    enabled: !isInitialMount,
+  });
+
+  const isWeatherLoading = isInitialMount || isWeatherQueryLoading || isCurrentWeatherLoading;
+
+  const weatherError =
+    weatherErrorObj || currentWeatherErrorObj
+      ? (weatherErrorObj as Error)?.message ||
+        (currentWeatherErrorObj as Error)?.message ||
+        'Nepodařilo se načíst počasí'
+      : null;
 
   const today = new Date();
   const yearStr = today.getFullYear();
@@ -99,8 +318,8 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
 
     return finalTargetDates.map((target) => {
       const matchedApiDay = weatherForecast.find((dayData: any) => {
-        if (!dayData?.interval?.startTime) return false;
-        const dateObj = new Date(dayData.interval.startTime);
+        if (!dayData?.time) return false;
+        const dateObj = new Date(dayData.time);
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const day = String(dateObj.getDate()).padStart(2, '0');
@@ -109,8 +328,8 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
       });
 
       if (matchedApiDay) {
-        const maxTemp = matchedApiDay.maxTemperature?.degrees;
-        const minTemp = matchedApiDay.minTemperature?.degrees;
+        const maxTemp = matchedApiDay.maxTemp;
+        const minTemp = matchedApiDay.minTemp;
         const temp =
           maxTemp !== undefined && minTemp !== undefined
             ? `${Math.round(maxTemp)}° / ${Math.round(minTemp)}°C`
@@ -118,8 +337,8 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
               ? `${Math.round(maxTemp)}°C`
               : 'N/A';
 
-        const desc = matchedApiDay.daytimeForecast?.weatherCondition?.description?.text || 'N/A';
-        const iconBaseUri = matchedApiDay.daytimeForecast?.weatherCondition?.iconBaseUri;
+        const desc = matchedApiDay.desc || 'N/A';
+        const iconBaseUri = matchedApiDay.icon;
         const iconUrl = iconBaseUri ? `${iconBaseUri}.png` : null;
 
         const isRain =
@@ -177,27 +396,33 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
   // Resolve currently active key for hourly display
   const currentSelectedKey = selectedDateKey || activeDateKey;
 
+  const { data: hourlyForecast = [], isLoading: isHourlyQueryLoading } = useQuery<any[]>({
+    queryKey: ['weather-hourly', selectedLocation.lat, selectedLocation.lon, currentSelectedKey],
+    queryFn: () =>
+      fetchWeatherHourly(selectedLocation.lat, selectedLocation.lon, currentSelectedKey),
+    enabled: !isInitialMount,
+  });
+
+  const isHourlyLoading = isInitialMount || isHourlyQueryLoading;
+
   // Filter and process hourly forecast for selected day
   const hourlyForSelectedDay = hourlyForecast
     .filter((hourData: any) => {
-      if (!hourData?.displayDateTime) return false;
-      const year = hourData.displayDateTime.year;
-      const month = String(hourData.displayDateTime.month).padStart(2, '0');
-      const day = String(hourData.displayDateTime.day).padStart(2, '0');
+      if (hourData?.y === undefined) return false;
+      const year = hourData.y;
+      const month = String(hourData.m).padStart(2, '0');
+      const day = String(hourData.d).padStart(2, '0');
       const dateKey = `${year}-${month}-${day}`;
-      return dateKey === currentSelectedKey && hourData.displayDateTime.hours >= 6;
+      return dateKey === currentSelectedKey && hourData.h >= 6;
     })
     .map((hourData: any) => {
-      const hours = hourData.displayDateTime.hours;
+      const hours = hourData.h;
       const timeLabel = `${String(hours).padStart(2, '0')}:00`;
 
-      const temp =
-        hourData.temperature?.degrees !== undefined
-          ? `${Math.round(hourData.temperature.degrees)}°`
-          : 'N/A';
+      const temp = hourData.temp !== undefined ? `${Math.round(hourData.temp)}°` : 'N/A';
 
-      const desc = hourData.weatherCondition?.description?.text || 'N/A';
-      const iconBaseUri = hourData.weatherCondition?.iconBaseUri;
+      const desc = hourData.desc || 'N/A';
+      const iconBaseUri = hourData.icon;
       const iconUrl = iconBaseUri ? `${iconBaseUri}.png` : null;
 
       const isRain =
@@ -206,7 +431,8 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
         desc.toLowerCase().includes('přeháň') ||
         desc.toLowerCase().includes('bouř');
 
-      const rainProb = hourData.precipitation?.probability?.percent;
+      const rainProb = hourData.prec;
+      const windSpeed = hourData.wind;
 
       return {
         time: timeLabel,
@@ -216,6 +442,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
         icon: isRain ? 'CloudRain' : 'Sun',
         color: isRain ? 'text-sky-500' : 'text-amber-500',
         rainProb: rainProb !== undefined && rainProb > 0 ? `${rainProb}%` : null,
+        windSpeed: windSpeed !== undefined ? `${Math.round(windSpeed)} km/h` : null,
       };
     });
 
@@ -228,52 +455,103 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between">
         {children}
 
         {/* Weather Widget Button */}
         <div className="flex shrink-0 items-center">
           {isWeatherLoading ? (
-            <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-400">
-              <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-500" />
-              <span>Počasí...</span>
-            </div>
+            <button
+              onClick={() => setIsWeatherExpanded(!isWeatherExpanded)}
+              className={cn(
+                'flex cursor-pointer flex-col gap-1 rounded-xl border border-transparent bg-slate-700/60 px-3 py-2 text-sm font-medium transition-all hover:bg-slate-800',
+                isWeatherExpanded &&
+                  'border border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.15)]',
+              )}
+              aria-expanded={isWeatherExpanded}
+            >
+              <div className="max-w-30 truncate text-left text-[9px] font-bold tracking-wider text-emerald-400 uppercase">
+                Počasí
+              </div>
+              <div className="flex items-center justify-between gap-2.5">
+                <div className="text-left">
+                  <div className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    Dnes
+                  </div>
+                  <div className="font-semibold text-white">N/A</div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <RefreshCw className="h-5 w-5 animate-spin text-emerald-500" />
+                </div>
+              </div>
+            </button>
           ) : weatherError ? (
             <div className="text-xs text-red-400">Počasí nedostupné</div>
           ) : activeWeather ? (
             <button
               onClick={() => setIsWeatherExpanded(!isWeatherExpanded)}
               className={cn(
-                'group flex cursor-pointer items-center gap-2.5 rounded-xl border border-transparent bg-slate-700/60 px-3.5 py-2 text-sm font-medium transition-all hover:bg-slate-800',
+                'flex cursor-pointer flex-col gap-1 rounded-xl border border-transparent bg-slate-700/60 px-3 py-2 text-sm font-medium transition-all hover:bg-slate-800',
                 isWeatherExpanded &&
                   'border border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.15)]',
               )}
               aria-expanded={isWeatherExpanded}
             >
-              <div className="text-left">
-                <div className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                  {activeDateKey === todayKey ? 'Dnes' : activeWeather.day}
-                </div>
-                <div className="font-semibold text-white">
-                  {activeWeather.maxTemp
-                    ? `${activeWeather.maxTemp} / ${activeWeather.minTemp}`
-                    : activeWeather.temp}
-                </div>
+              <div className="max-w-30 truncate text-left text-[9px] font-bold tracking-wider text-emerald-400 uppercase">
+                {selectedLocation.name}
               </div>
-              <div className="flex items-center gap-1">
-                {activeWeather.iconUrl ? (
-                  <img
-                    src={activeWeather.iconUrl}
-                    alt={activeWeather.desc}
-                    className="h-7 w-7 object-contain"
-                  />
-                ) : activeWeather.icon === 'Sun' ? (
-                  <Sun className="h-5 w-5 text-amber-500" />
-                ) : activeWeather.icon === 'Cloud' ? (
-                  <Cloud className="h-5 w-5 text-slate-400" />
-                ) : (
-                  <CloudRain className="h-5 w-5 text-sky-400" />
-                )}
+              <div className="flex items-center justify-between gap-2.5">
+                <div className="text-left">
+                  <div className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    Aktuálně
+                  </div>
+                  <div className="flex items-baseline font-semibold text-white">
+                    {currentWeather ? (
+                      <>
+                        <span>{Math.round(currentWeather.temp)}°C</span>
+                        {currentWeather.prec !== undefined && currentWeather.prec > 0 && (
+                          <span className="ml-1.5 text-sm font-semibold text-sky-400">
+                            {currentWeather.prec}%
+                          </span>
+                        )}
+                      </>
+                    ) : activeWeather.maxTemp ? (
+                      `${activeWeather.maxTemp} / ${activeWeather.minTemp}`
+                    ) : (
+                      activeWeather.temp
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {currentWeather ? (
+                    currentWeather.icon ? (
+                      <img
+                        src={`${currentWeather.icon}.png`}
+                        alt={currentWeather.desc}
+                        className="h-7 w-7 object-contain"
+                      />
+                    ) : currentWeather.desc?.toLowerCase().includes('déšť') ||
+                      currentWeather.desc?.toLowerCase().includes('sráž') ||
+                      currentWeather.desc?.toLowerCase().includes('přeháň') ||
+                      currentWeather.desc?.toLowerCase().includes('bouř') ? (
+                      <CloudRain className="h-7 w-7 text-sky-400" />
+                    ) : (
+                      <Sun className="h-7 w-7 text-amber-500" />
+                    )
+                  ) : activeWeather.iconUrl ? (
+                    <img
+                      src={activeWeather.iconUrl}
+                      alt={activeWeather.desc}
+                      className="h-7 w-7 object-contain"
+                    />
+                  ) : activeWeather.icon === 'Sun' ? (
+                    <Sun className="h-7 w-7 text-amber-500" />
+                  ) : activeWeather.icon === 'Cloud' ? (
+                    <Cloud className="h-7 w-7 text-slate-400" />
+                  ) : (
+                    <CloudRain className="h-7 w-7 text-sky-400" />
+                  )}
+                </div>
               </div>
             </button>
           ) : null}
@@ -291,10 +569,48 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
             className="w-full space-y-4 overflow-hidden"
           >
             {/* Weekly section */}
+
+            <div className="mt-6 mb-4 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                Lokace
+              </span>
+              {/* Location Selector */}
+              <div className="relative flex w-full items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-3 text-white">
+                <div className="flex w-full items-center justify-between pointer-events-none">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-emerald-500" />
+                    <span className="text-sm font-semibold text-white">{selectedLocation.name}</span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+                <select
+                  value={selectedLocation.name}
+                  onChange={(e) => {
+                    const target = weatherLocations.find((loc) => loc.name === e.target.value);
+                    if (target) {
+                      setSelectedLocation(target);
+                    }
+                  }}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 z-10"
+                >
+                  {weatherLocations.map((loc) => (
+                    <option
+                      key={loc.name}
+                      value={loc.name}
+                      className="bg-slate-900 text-white"
+                    >
+                      {loc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Weekly section */}
             <div className="mt-6">
-              <div className="mb-3 flex items-center justify-between">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                  Týdenní předpověď Kaprun
+                  Týdenní předpověď
                 </span>
               </div>
               <div className="flex scrollbar-none gap-2.5 overflow-x-auto pt-0.5 pb-2">
@@ -322,11 +638,11 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                           className="my-1.5 h-8 w-8 object-contain"
                         />
                       ) : w.icon === 'Sun' ? (
-                        <Sun className={`my-2 h-5 w-5 ${w.color}`} />
+                        <Sun className={`my-1.5 h-8 w-8 ${w.color}`} />
                       ) : w.icon === 'Cloud' ? (
-                        <Cloud className={`my-2 h-5 w-5 ${w.color}`} />
+                        <Cloud className={`my-1.5 h-8 w-8 ${w.color}`} />
                       ) : (
-                        <CloudRain className={`my-2 h-5 w-5 ${w.color}`} />
+                        <CloudRain className={`my-1.5 h-8 w-8 ${w.color}`} />
                       )}
                       <div className="text-sm font-semibold">
                         {w.maxTemp ? (
@@ -350,31 +666,25 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
             </div>
 
             {/* Hourly section */}
-            <div className="">
+            <div className="pb-2">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
                   Hodinová předpověď:{' '}
                   <span className="font-extrabold text-white">{selectedDayLabel}</span>
                 </span>
-                {isHourlyLoading && (
-                  <span className="flex items-center gap-1 text-[10px] text-slate-500">
-                    <RefreshCw className="h-3 w-3 animate-spin text-emerald-500" /> Načítám
-                    hodiny...
-                  </span>
-                )}
               </div>
 
               {isHourlyLoading ? (
-                <div className="flex h-20 items-center justify-center gap-2 rounded-xl bg-slate-900/30">
+                <div className="flex h-33.5 items-center justify-center gap-2 rounded-xl bg-slate-900/30">
                   <RefreshCw className="h-4 w-4 animate-spin text-emerald-500" />
                   <span className="text-xs text-slate-400">Načítám podrobná data...</span>
                 </div>
               ) : hourlyForSelectedDay.length > 0 ? (
-                <div className="flex scrollbar-none overflow-x-auto rounded-xl bg-slate-800 pt-0.5 pb-2">
+                <div className="flex scrollbar-none overflow-x-auto rounded-xl bg-slate-800 px-1">
                   {hourlyForSelectedDay.map((h, idx) => (
                     <div
                       key={idx}
-                      className="flex min-w-13 flex-col items-center justify-center rounded-xl border-slate-800/50 p-2 pb-0 text-center transition-all"
+                      className="flex min-w-13 flex-col items-center justify-center rounded-xl border-slate-800/50 p-3 text-center transition-all"
                     >
                       <span className="text-xs font-semibold text-slate-400">{h.time}</span>
                       {h.iconUrl ? (
@@ -391,8 +701,14 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                         <CloudRain className={`my-1 h-4 w-4 ${h.color}`} />
                       )}
                       <span className="text-sm font-semibold text-white">{h.temp}</span>
+
+                      {h.windSpeed && (
+                        <span className="mt-1 text-xs font-semibold whitespace-nowrap text-slate-400">
+                          {h.windSpeed}
+                        </span>
+                      )}
                       {h.rainProb ? (
-                        <span className="mt-0.5 flex items-center gap-0.5 text-sm font-semibold text-sky-400">
+                        <span className="mt-0.5 text-sm font-semibold text-sky-400">
                           {h.rainProb}
                         </span>
                       ) : (

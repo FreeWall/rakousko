@@ -18,17 +18,17 @@ export default function Accommodation() {
     <>
       {/* Main Responsive Area */}
       <main
-        className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 overflow-y-auto"
+        className="overflow-y-none mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6"
         id="main_content"
       >
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="overflow-hidden bg-white shadow-sm"
+          className="overflow-hidden bg-white pb-10 shadow-sm"
         >
           {/* Hero section with visual of the pension */}
-          <div className="relative h-64 w-full bg-slate-100 sm:h-80 md:h-96 overflow-hidden">
+          <div className="relative h-64 w-full overflow-hidden bg-slate-100 sm:h-80 md:h-96">
             <img
               src="/images/pension_baranekhof.webp"
               alt="Pension Baranekhof v Kaprunu"
@@ -76,7 +76,7 @@ export default function Accommodation() {
                 <div className="flex gap-3">
                   <LinkButton
                     variant="googlemaps"
-                    href="https://www.google.com/maps/search/?api=1&query=Pension+Baranekhof+Kaprun+Austria"
+                    href="https://www.google.com/maps?cid=13611371175237802278"
                     type="icon"
                   ></LinkButton>
                   <LinkButton

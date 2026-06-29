@@ -2,7 +2,6 @@ import { ArrowLeft, Info, Mountain, PawPrint, QrCode, Users } from 'lucide-react
 import { motion } from 'motion/react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
 import React from 'react';
 
 import { LinkButton } from '@/components/LinkButton';
@@ -16,7 +15,7 @@ export default function DestinationDetail({ destination }: DestinationDetailProp
   return (
     <>
       <Head>
-        <title>{`${destination.name} | Kaprun 2026`}</title>
+        <title>{`${destination.name} | Rakousko 2026`}</title>
         <meta
           name="description"
           content={`${destination.name} - ${destination.subtitle || destination.description}`}
@@ -24,7 +23,7 @@ export default function DestinationDetail({ destination }: DestinationDetailProp
       </Head>
 
       <main
-        className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 overflow-y-auto"
+        className="overflow-y-none mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6"
         id="main_content"
       >
         {/* Dynamic Detail Card with Motion */}
@@ -49,13 +48,13 @@ export default function DestinationDetail({ destination }: DestinationDetailProp
             <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
 
             {/* Back Button */}
-            <Link
-              href="/"
-              className="absolute top-4 left-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/70 text-white transition-colors after:absolute after:-inset-4 after:content-[''] hover:bg-slate-900/80 active:scale-95"
+            <button
+              onClick={() => window.history.back()}
+              className="absolute top-4 left-4 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-900/70 text-white transition-colors after:absolute after:-inset-8 after:content-[''] hover:bg-slate-900/80 active:scale-95"
               title="Zpět"
             >
               <ArrowLeft className="h-5 w-5" />
-            </Link>
+            </button>
 
             {/* Title & Subtitle inside Hero */}
             <div className="absolute right-0 bottom-0 left-0 p-6 text-white sm:p-8">
@@ -87,15 +86,16 @@ export default function DestinationDetail({ destination }: DestinationDetailProp
                         Oficiální web
                       </LinkButton>
                     )}
+                    {destination.googleMapsUrl && (
+                      <LinkButton
+                        variant="googlemaps"
+                        href={destination.googleMapsUrl}
 
-                    <LinkButton
-                      variant="googlemaps"
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination.name)}`}
-
-                      type="icon"
-                    >
-                      Google Maps
-                    </LinkButton>
+                        type="icon"
+                      >
+                        Google Maps
+                      </LinkButton>
+                    )}
                     {destination.mapyUrl && (
                       <LinkButton
                         variant="mapycz"

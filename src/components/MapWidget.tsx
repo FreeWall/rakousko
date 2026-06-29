@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
-
-import 'leaflet/dist/leaflet.css';
 import { Compass, ExternalLink, Home, MapPin, Navigation } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import 'leaflet/dist/leaflet.css';
 
 import { destinations } from '@/lib/destinations';
 
 // Approximate coordinates for Baranekhof Pension
-const PENSION_COORDS: [number, number] = [47.2369, 12.723];
+const PENSION_COORDS: [number, number] = [47.2385075, 12.7314019];
 
 // Destination list helper with coordinates added
 const allPoints = [
@@ -46,6 +45,38 @@ export default function MapWidget() {
     // Add Scale and Zoom Control at bottom right
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+    const mapyCzOutdoor = L.tileLayer(
+      'https://api.mapy.cz/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=BLJxiprIuc-CITOeX03d1Pa9mTRsfXtpCTurpviVl88',
+      {
+        minZoom: 0,
+        maxZoom: 19,
+        attribution:
+          '<a href="https://api.mapy.cz/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
+      },
+    );
+
+    const mapyCzAerial = L.tileLayer(
+      'https://api.mapy.cz/v1/maptiles/aerial/256/{z}/{x}/{y}?apikey=BLJxiprIuc-CITOeX03d1Pa9mTRsfXtpCTurpviVl88',
+      {
+        minZoom: 0,
+        maxZoom: 19,
+        attribution:
+          '<a href="https://api.mapy.cz/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
+      },
+    );
+
+    const mapyCzNames = L.tileLayer(
+      'https://api.mapy.cz/v1/maptiles/names-overlay/256/{z}/{x}/{y}?apikey=BLJxiprIuc-CITOeX03d1Pa9mTRsfXtpCTurpviVl88',
+      {
+        minZoom: 0,
+        maxZoom: 19,
+        attribution:
+          '<a href="https://api.mapy.cz/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
+      },
+    );
+
+    const mapyCzHybrid = L.layerGroup([mapyCzAerial, mapyCzNames]);
+
     const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       maxZoom: 20,
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -65,9 +96,11 @@ export default function MapWidget() {
     });
 
     // Default layer
-    googleStreets.addTo(map);
+    mapyCzOutdoor.addTo(map);
 
     const baseMaps = {
+      'Mapy.cz Turistická': mapyCzOutdoor,
+      'Mapy.cz Letecká (Hybrid)': mapyCzHybrid,
       'Google Mapa': googleStreets,
       'Google Satelitní': googleHybrid,
       OpenStreetMap: osm,

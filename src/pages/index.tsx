@@ -10,7 +10,7 @@ export default function Home() {
     <>
       {/* Main Responsive Area */}
       <main
-        className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 overflow-y-auto px-4 py-6 md:py-8"
+        className="overflow-y-none mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-2 pb-10"
         id="main_content"
       >
         <motion.div

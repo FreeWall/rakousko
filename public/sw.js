@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaprun-cache-v1';
+const CACHE_NAME = 'rakousko-2026-cache-v3';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -10,7 +10,7 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  
+
   e.respondWith(
     fetch(e.request)
       .then((res) => {
@@ -24,6 +24,6 @@ self.addEventListener('fetch', (e) => {
       })
       .catch(() => {
         return caches.match(e.request);
-      })
+      }),
   );
 });

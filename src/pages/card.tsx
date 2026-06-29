@@ -91,14 +91,14 @@ export default function CardSimulator() {
     <>
       {/* Main Responsive Area */}
       <main
-        className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 overflow-y-auto"
+        className="overflow-y-none mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6"
         id="main_content"
       >
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="overflow-hidden bg-white shadow-sm"
+          className="overflow-hidden bg-white pb-10 shadow-sm"
         >
           {/* Hero Banner with SalzburgerLand Card Mobile Image */}
           <div className="relative h-64 w-full overflow-hidden bg-slate-100 sm:h-80 md:h-96">

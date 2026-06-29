@@ -1,6 +1,5 @@
 import React from 'react';
 
-import Footer from './Footer';
 import Header from './Header';
 
 interface LayoutProps {
@@ -10,12 +9,11 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   return (
     <div
-      className="flex min-h-screen flex-col bg-slate-50 text-slate-800 selection:bg-emerald-200 selection:text-emerald-900"
+      className="flex min-h-screen flex-col bg-slate-100 text-slate-800 selection:bg-emerald-200 selection:text-emerald-900"
       id="main_container"
     >
       <Header />
       {children}
-      <Footer />
     </div>
   );
 }

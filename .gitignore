@@ -9,6 +9,7 @@
 /build
 next-env.d.ts
 /.swc
+tsconfig.tsbuildinfo
 
 # local env files
 .env

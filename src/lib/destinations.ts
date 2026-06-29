@@ -7,6 +7,7 @@ export interface Destination {
   highlights: string[];
   tips: string;
   mapyUrl?: string;
+  googleMapsUrl?: string;
   slCardInfo?: string;
   noteKey: string;
   cableCarHours?: string;
@@ -35,6 +36,7 @@ export const destinations: Destination[] = [
     ],
     tips: 'Teploty nahoře bývají kolem nuly i v červenci, nezapomeňte zimní bundu a pevné pohorky! Vyrazte hned ráno, abyste se vyhnuli frontám a užili si jasné nebe.',
     mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=6306234',
+    googleMapsUrl: 'https://www.google.com/maps?cid=14389824593404916720',
     slCardInfo: 'Jednorázový výjezd a sjezd lanovkou zdarma.',
     noteKey: 'note_kitzsteinhorn',
     cableCarHours: '8:30 – 16:45',
@@ -45,7 +47,8 @@ export const destinations: Destination[] = [
     groupPriceNormal: 'cca 216,00 € (kombinovaná jízdenka pro 4 dospělé bez karty)',
     groupPriceCard: '0,00 € (v rámci SalzburgerLand Card je výjezd 1x zcela zdarma)',
     webUrl: 'https://www.kitzsteinhorn.at',
-    coords: [47.2008, 12.6865],
+    // coords: [47.2008, 12.6865],
+    coords: [47.1880444, 12.6874983],
     imageUrl: '/images/destinations/kitzsteinhorn.webp',
   },
   {
@@ -62,6 +65,7 @@ export const destinations: Destination[] = [
     ],
     tips: 'Nachází se jen pár minut chůze od Pensionu Baranekhof. Vhodné i za méně stabilního počasí. Večer bývá soutěska v určité dny magicky osvětlená.',
     mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=12020854',
+    googleMapsUrl: 'https://www.google.com/maps?cid=10026874687703979581',
     slCardInfo: 'Vstup do soutěsky Sigmund-Thun-Klamm je zdarma.',
     noteKey: 'note_sigmund',
     dogPrice: 'Vstup zdarma (psi jsou vítáni)',
@@ -70,7 +74,7 @@ export const destinations: Destination[] = [
     groupPriceNormal: '30,00 € (7,50 € za osobu bez karty)',
     groupPriceCard: '0,00 € (vstup je plně zahrnut v SalzburgerLand Card)',
     webUrl: 'https://www.klamm-kaprun.at',
-    coords: [47.2625, 12.7483],
+    coords: [47.2590547, 12.7382867],
     imageUrl: '/images/destinations/sigmund_thun_klam.webp',
   },
   {
@@ -87,6 +91,7 @@ export const destinations: Destination[] = [
     ],
     tips: 'Skvělý výchozí bod pro další vysokohorské túry. Poslední autobus dolů jede kolem 16:45, nenechte si ho ujít! Nahoře bývá větrno a chladněji než v údolí.',
     mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=96102629',
+    googleMapsUrl: 'https://www.google.com/maps?cid=4763473645543389838',
     slCardInfo: 'Výrazná sleva na kombinovanou jízdenku bus + výtah.',
     noteKey: 'note_mooserboden',
     cableCarHours: '8:10 – 16:45 (poslední bus dolů)',
@@ -97,7 +102,7 @@ export const destinations: Destination[] = [
     groupPriceNormal: '114,00 € (28,50 € za dospělého bez karty)',
     groupPriceCard: '96,00 € (s kartou získáte slevu, jízdenka stojí cca 24,00 € na osobu)',
     webUrl: 'https://www.verbund.com/kaprun',
-    coords: [47.1614, 12.7214],
+    coords: [47.1595919, 12.7157906],
     imageUrl: '/images/destinations/mooserboden.webp',
   },
   {
@@ -114,6 +119,7 @@ export const destinations: Destination[] = [
     ],
     tips: 'Ideální cíl na aklimatizaci nebo půldenní rodinnou turistiku. Stezky jsou široké a vhodné i pro kočárky nebo méně zdatné turisty.',
     mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1066791681',
+    googleMapsUrl: 'https://www.google.com/maps?cid=775730706809525954',
     slCardInfo: 'Jízda lanovkou zdarma, na bobovou dráhu platí sleva.',
     noteKey: 'note_maiskogel',
     cableCarHours: '9:00 – 17:00',
@@ -125,7 +131,7 @@ export const destinations: Destination[] = [
     groupPriceCard:
       '0,00 € (lanovka je zdarma se SalzburgerLand Card; bobová dráha se platí zvlášť se slevou)',
     webUrl: 'https://www.kitzsteinhorn.at/en/summer/maiskogel',
-    coords: [47.2667, 12.7333],
+    coords: [47.2692089, 12.7348169],
     imageUrl: '/images/destinations/maiskogel.webp',
   },
   {
@@ -141,7 +147,8 @@ export const destinations: Destination[] = [
       'Historické centrum města s promenádou podél jezera a večerní světelnou show (Zeller Seezauber)',
     ],
     tips: 'Vyhlídková plavba lodí je velmi populární, vyplatí se zkontrolovat plavební řád předem a dorazit k přístavišti dříve. Večerní světelná show s hudbou a lasery (Zeller Seezauber) je zdarma.',
-    mapyUrl: 'https://mapy.cz/turisticka?source=osm&id=6264627',
+    mapyUrl: 'https://mapy.cz/turisticka?source=osm&id=129907721',
+    googleMapsUrl: 'https://www.google.com/maps?cid=549009406237162807',
     slCardInfo: 'Jedna okružní plavba lodí zdarma.',
     noteKey: 'note_zell',
     dogPrice: 'cca 6,00 € (lístek na vyhlídkovou loď)',
@@ -150,7 +157,7 @@ export const destinations: Destination[] = [
     groupPriceNormal: '88,00 € (22,00 € za okružní plavbu pro dospělého bez karty)',
     groupPriceCard: '0,00 € (1x okružní plavba lodí zdarma v rámci SalzburgerLand Card)',
     webUrl: 'https://www.zellamsee-kaprun.com',
-    coords: [47.3236, 12.7969],
+    coords: [47.3223636, 12.8077747],
     imageUrl: '/images/destinations/zell_am_see.webp',
   },
   {
@@ -166,7 +173,8 @@ export const destinations: Destination[] = [
       'Designové kabiny lanovky a vyhlídková kaple Sisi na samotném vrcholu (1965 m)',
     ],
     tips: 'Nahoře je spousta turistických tras všech obtížností. Za slunečného dne je odtud nejlepší výhled na jezero a okolní hory. Doporučujeme trasu po hřebeni (Höhenpromenade).',
-    mapyUrl: 'https://mapy.cz/turisticka?source=osm&id=1063743585',
+    mapyUrl: 'https://mapy.cz/turisticka?source=osm&id=1048167268',
+    googleMapsUrl: 'https://www.google.com/maps?cid=2609259247063781167',
     slCardInfo: 'Jízda lanovkami nahoru i dolů zdarma.',
     noteKey: 'note_schmittenhohe',
     cableCarHours: '9:00 – 17:00',
@@ -177,7 +185,7 @@ export const destinations: Destination[] = [
     groupPriceNormal: '168,00 € (42,00 € za dospělého bez karty)',
     groupPriceCard: '0,00 € (zpáteční jízdenka lanovkou je zcela zdarma se SalzburgerLand Card)',
     webUrl: 'https://www.schmitten.at/en',
-    coords: [47.3278, 12.7378],
+    coords: [47.3293614, 12.7376169],
     imageUrl: '/images/destinations/schmittenhohe.webp',
   },
   {
@@ -194,6 +202,7 @@ export const destinations: Destination[] = [
     ],
     tips: 'Vezměte si pláštěnku nebo nepromokavou bundu, vodní tříšť stříká daleko na vyhlídkové plošiny. Cesta na nejvyšší bod vodopádů trvá cca 1,5 hodiny strmého stoupání.',
     mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=11998097',
+    googleMapsUrl: 'https://www.google.com/maps?cid=11466323760185608861',
     slCardInfo: 'Vstup k vodopádům a parkování zdarma.',
     noteKey: 'note_krimml',
     dogPrice: 'Vstup zdarma (psi jsou vítáni)',
@@ -203,7 +212,7 @@ export const destinations: Destination[] = [
     groupPriceCard:
       '0,00 € (vstup na stezku a parkování na vyhrazeném parkovišti P4 je s kartou zdarma)',
     webUrl: 'https://www.krimmler-wasserwelten.at',
-    coords: [47.2119, 12.1689],
+    coords: [47.2083756, 12.1702242],
     imageUrl: '/images/destinations/krimml_waterfalls.webp',
   },
   {
@@ -220,6 +229,7 @@ export const destinations: Destination[] = [
     ],
     tips: 'Ideální program pro deštivé odpoledne nebo pro zasloužený odpočinek po náročné túře. O víkendech a při špatném počasí bývá plno, doporučuje se rezervovat vstup předem online.',
     mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1025788061',
+    googleMapsUrl: 'https://www.google.com/maps?cid=7240603322677868495',
     slCardInfo: 'Sleva na vstupné s kartou.',
     noteKey: 'note_tauern',
     dogPrice: 'Vstup se psem zakázán',
@@ -228,7 +238,33 @@ export const destinations: Destination[] = [
     groupPriceCard:
       'cca 120,00 € (se SalzburgerLand Card získáte slevu cca 15 % na jednorázový vstup)',
     webUrl: 'https://www.tauernspakaprun.com',
-    coords: [47.2831, 12.7601],
+    coords: [47.2828719, 12.7601369],
     imageUrl: '/images/destinations/tauern_spa.webp',
+  },
+  {
+    id: 'veteran_museum',
+    name: 'Muzeum veteránů Kaprun',
+    subtitle: 'Vötters Fahrzeugmuseum',
+    type: 'Muzeum & Historie',
+    description:
+      'Působivá sbírka historických vozidel převážně z 50. až 70. let 20. století. Výstava se nachází přímo v Kaprunu a představuje auta, motocykly, traktory a různé dobové exponáty.',
+    highlights: [
+      'Expozice s více než 200 historickými vozidly (automobily, motocykly, traktory, skútry)',
+      'Retro exponáty z poválečného období, včetně dobově zařízeného obývacího pokoje',
+      'Unikátní kousky jako miniauta Messerschmitt, Goggomobil či BMW Isetta',
+    ],
+    tips: 'Skvělá alternativa a program pro deštivé dny. Muzeum se nachází jen kousek pod hradem Kaprun, obě návštěvy tak můžete snadno spojit.',
+    mapyUrl: 'https://mapy.com/cs/turisticka?source=osm&id=1107993164',
+    googleMapsUrl: 'https://www.google.com/maps?cid=6501690900595010795',
+    slCardInfo: 'Jednorázový vstup zdarma.',
+    noteKey: 'note_veteran',
+    dogPrice: 'Vstup zdarma (psi jsou vítáni)',
+    dogInfo:
+      'Psi mají do expozice vstup povolen zdarma. Jelikož se jedná o vnitřní výstavní prostory, pes musí být po celou dobu na vodítku. Muzeum je přímo propojené s hotelem Vötter’s.',
+    groupPriceNormal: '48,00 € (12,00 € za dospělého bez karty)',
+    groupPriceCard: '0,00 € (vstup je plně zahrnut v SalzburgerLand Card)',
+    webUrl: 'http://www.oldtimer-museum.at',
+    coords: [47.272645, 12.7662689],
+    imageUrl: '/images/destinations/veteran_museum.webp',
   },
 ];

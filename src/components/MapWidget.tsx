@@ -312,11 +312,16 @@ export default function MapWidget() {
                   )}
 
                   {/* Transport / dog details */}
-                  {((selectedPoint as any).cableCarHours || (selectedPoint as any).dogPrice) && (
+                  {((selectedPoint as any).cableCarHours || (selectedPoint as any).openingHours || (selectedPoint as any).dogPrice) && (
                     <div className="space-y-1 rounded-lg border border-slate-200/60 bg-slate-50 p-2 text-[10px] text-slate-700">
                       {(selectedPoint as any).cableCarHours && (
                         <div>
                           <strong>Provoz:</strong> {(selectedPoint as any).cableCarHours}
+                        </div>
+                      )}
+                      {(selectedPoint as any).openingHours && (
+                        <div>
+                          <strong>Otevřeno:</strong> {(selectedPoint as any).openingHours}
                         </div>
                       )}
                       {(selectedPoint as any).dogPrice && (

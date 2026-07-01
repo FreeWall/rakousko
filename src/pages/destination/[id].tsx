@@ -1,4 +1,4 @@
-import { ArrowLeft, Info, Mountain, PawPrint, QrCode, Users } from 'lucide-react';
+import { ArrowLeft, Clock, Info, Mountain, PawPrint, QrCode, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -161,16 +161,28 @@ export default function DestinationDetail({ destination }: DestinationDetailProp
                 <p className="">{destination.tips}</p>
               </div>
 
-              {/* Cable car operating details */}
-              {(destination.cableCarHours || destination.cableCarDuration) && (
+              {/* Provozní / Otevírací doba */}
+              {(destination.cableCarHours || destination.cableCarDuration || destination.openingHours) && (
                 <div className="rounded-xl border border-slate-200/80 bg-slate-100/50 p-4 text-xs text-slate-700 sm:text-sm">
                   <div className="mb-3 flex items-center gap-2 font-bold text-slate-800">
-                    <Mountain className="h-4 w-4 shrink-0 text-emerald-600" />
-                    Detaily dopravy / lanovky
+                    {destination.openingHours ? (
+                      <Clock className="h-4 w-4 shrink-0 text-emerald-600" />
+                    ) : (
+                      <Mountain className="h-4 w-4 shrink-0 text-emerald-600" />
+                    )}
+                    {destination.openingHours ? 'Provozní informace' : 'Detaily dopravy / lanovky'}
                   </div>
                   <div className="space-y-2">
+                    {destination.openingHours && (
+                      <div className={`flex justify-between gap-2 ${destination.cableCarHours || destination.cableCarDuration ? 'border-b border-slate-200/40 pb-2' : ''}`}>
+                        <span className="font-medium text-slate-500">Otevírací doba:</span>
+                        <span className="font-semibold text-slate-950 text-right">
+                          {destination.openingHours}
+                        </span>
+                      </div>
+                    )}
                     {destination.cableCarHours && (
-                      <div className="flex justify-between gap-2 border-b border-slate-200/40 pb-2">
+                      <div className={`flex justify-between gap-2 ${destination.cableCarDuration ? 'border-b border-slate-200/40 pb-2' : ''}`}>
                         <span className="font-medium text-slate-500">Provozní doba:</span>
                         <span className="font-semibold text-slate-950">
                           {destination.cableCarHours}

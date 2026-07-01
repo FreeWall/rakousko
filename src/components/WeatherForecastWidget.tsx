@@ -1,11 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Cloud, CloudRain, MapPin, RefreshCw, Sun } from 'lucide-react';
 import { AnimatePresence, cubicBezier, motion } from 'motion/react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 import { destinations } from '@/lib/destinations';
 import { cn } from '@/lib/utils';
+
+const RadarMap = dynamic(() => import('./RadarMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="mt-2 flex h-64 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/50">
+      <RefreshCw className="h-4 w-4 animate-spin text-emerald-500" />
+      <span className="text-xs text-slate-400">Načítám srážkový radar...</span>
+    </div>
+  ),
+});
 
 const weatherLocations = [
   {
@@ -576,10 +587,12 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
               </span>
               {/* Location Selector */}
               <div className="relative flex w-full items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-3 text-white">
-                <div className="flex w-full items-center justify-between pointer-events-none">
+                <div className="pointer-events-none flex w-full items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-emerald-500" />
-                    <span className="text-sm font-semibold text-white">{selectedLocation.name}</span>
+                    <span className="text-sm font-semibold text-white">
+                      {selectedLocation.name}
+                    </span>
                   </div>
                   <ChevronDown className="h-4 w-4 text-slate-400" />
                 </div>
@@ -591,7 +604,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                       setSelectedLocation(target);
                     }
                   }}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 z-10"
+                  className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                 >
                   {weatherLocations.map((loc) => (
                     <option
@@ -666,7 +679,7 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
             </div>
 
             {/* Hourly section */}
-            <div className="pb-2">
+            <div>
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
                   Hodinová předpověď:{' '}
@@ -725,6 +738,16 @@ export default function WeatherForecastWidget({ children }: WeatherForecastWidge
                   </span>
                 </div>
               )}
+            </div>
+
+            {/* Radar section */}
+            <div className="pb-4">
+              <div className="mb-2">
+                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  Aktuální srážkový radar
+                </span>
+              </div>
+              <RadarMap />
             </div>
           </motion.div>
         )}

@@ -11,6 +11,7 @@ export interface Destination {
   slCardInfo?: string;
   noteKey: string;
   cableCarHours?: string;
+  openingHours?: string;
   cableCarDuration?: string;
   dogPrice?: string;
   dogInfo?: string;
@@ -232,6 +233,7 @@ export const destinations: Destination[] = [
     googleMapsUrl: 'https://www.google.com/maps?cid=7240603322677868495',
     slCardInfo: 'Sleva na vstupné s kartou.',
     noteKey: 'note_tauern',
+    openingHours: 'denně 9:00 – 21:00 (bazény do 20:45)',
     dogPrice: 'Vstup se psem zakázán',
     dogInfo: 'Z hygienických důvodů mají psi do celého komplexu Tauern Spa přísný zákaz vstupu.',
     groupPriceNormal: '140,00 € (cca 35,00 € za 3hodinový vstup pro dospělého)',
@@ -258,6 +260,7 @@ export const destinations: Destination[] = [
     googleMapsUrl: 'https://www.google.com/maps?cid=6501690900595010795',
     slCardInfo: 'Jednorázový vstup zdarma.',
     noteKey: 'note_veteran',
+    openingHours: 'červen a září: denně 10:00 – 18:00, červenec a srpen: denně 10:00 – 20:00 (ostatní měsíce viz web)',
     dogPrice: 'Vstup zdarma (psi jsou vítáni)',
     dogInfo:
       'Psi mají do expozice vstup povolen zdarma. Jelikož se jedná o vnitřní výstavní prostory, pes musí být po celou dobu na vodítku. Muzeum je přímo propojené s hotelem Vötter’s.',

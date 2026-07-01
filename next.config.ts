@@ -9,6 +9,9 @@ const nextConfig = (phase: string): NextConfig => {
     images: {
       unoptimized: true,
     },
+    experimental: {
+      scrollRestoration: true,
+    },
     webpack(config) {
       config.module.rules.push({
         test: /\.svg$/,

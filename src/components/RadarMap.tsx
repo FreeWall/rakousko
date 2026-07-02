@@ -96,8 +96,8 @@ export default function RadarMap() {
 
     const steps: TimelineStep[] = [];
 
-    // 12 past steps (-12 to -1)
-    for (let i = -12; i < 0; i++) {
+    // 11 past steps (-11 to -1)
+    for (let i = -11; i < 0; i++) {
       const offset = Math.abs(i) * 5;
       const targetTime = new Date(baseDate.getTime() - offset * 60 * 1000);
 
@@ -277,7 +277,7 @@ export default function RadarMap() {
   return (
     <div className="relative mt-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50 shadow-inner">
       {/* Header Overlay */}
-      <div className="absolute top-2 left-2 z-10 flex flex-wrap items-center gap-2 rounded-lg bg-slate-900/90 px-3 py-1.5 text-xs text-white shadow backdrop-blur-xs">
+      <div className="absolute top-2 left-2 z-10 flex flex-wrap items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs text-white shadow">
         <Activity
           className={`h-3.5 w-3.5 ${
             activeIndex > 0
@@ -317,7 +317,7 @@ export default function RadarMap() {
       <div className="absolute top-2 right-2 z-10">
         <button
           onClick={handleRefresh}
-          className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/90 text-white shadow backdrop-blur-xs transition hover:bg-slate-800"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white shadow transition hover:bg-slate-800"
           title="Obnovit radar"
           disabled={loading}
         >
@@ -340,7 +340,7 @@ export default function RadarMap() {
             <div className="flex flex-1 flex-col gap-2">
               <input
                 type="range"
-                min="-12"
+                min="-11"
                 max="11"
                 value={activeIndex}
                 onChange={(e) => {
@@ -351,14 +351,12 @@ export default function RadarMap() {
                 }`}
                 style={{
                   background:
-                    'linear-gradient(to right, #334155 0%, #334155 52.17%, #f59e0baa 52.17%, #f59e0baa 100%)',
+                    'linear-gradient(to right, #334155 0%, #334155 50%, #f59e0baa 50%, #f59e0baa 100%)',
                 }}
               />
               <div className="flex justify-between px-1 text-[9px] font-medium text-slate-400 select-none">
-                <span>-60 min</span>
-                <span>Historie</span>
+                <span>-55 min</span>
                 <span className={activeIndex === 0 ? 'font-bold text-emerald-400' : ''}>Nyní</span>
-                <span className={activeIndex > 0 ? 'font-bold text-amber-400' : ''}>Předpověď</span>
                 <span>+55 min</span>
               </div>
             </div>

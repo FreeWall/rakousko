@@ -239,7 +239,7 @@ async function fetchWeatherHourly(lat: string, lon: string, targetDateKey: strin
 async function fetchCurrentWeather(lat: string, lon: string) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || API_KEY;
   const url = `https://weather.googleapis.com/v1/currentConditions:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lon}&units_system=METRIC&language_code=cs`;
-  const data = await fetchWithCache(url, 10 * 60 * 1000); // 10 minut
+  const data = await fetchWithCache(url, 5 * 60 * 1000); // 10 minut
   return data;
 }
 
